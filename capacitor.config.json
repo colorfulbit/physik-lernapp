@@ -1,0 +1,6 @@
+{
+  "appId": "de.physiklernapp.elektrostatik",
+  "appName": "Physik Lernapp",
+  "webDir": "www",
+  "android": { "backgroundColor": "#0e131d" }
+}

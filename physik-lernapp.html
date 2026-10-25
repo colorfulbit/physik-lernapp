@@ -1,0 +1,1334 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Physik Lernapp – Elektrostatik</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#16202f;--mut:#5b6b82;--line:#dfe5ef;--acc:#2563eb;--pos:#e11d48;--neg:#2563eb;--fld:#d97706;--eq:#0d9488;--ok:#15803d;--bad:#dc2626;--chip:#eef2fa;--warn:#fff7e0;--warnb:#f0c36d}
+@media(prefers-color-scheme:dark){:root{--bg:#0e131d;--card:#171e2c;--ink:#e8edf6;--mut:#95a3ba;--line:#273148;--acc:#60a5fa;--pos:#fb7185;--neg:#60a5fa;--fld:#fbbf24;--eq:#2dd4bf;--ok:#4ade80;--bad:#f87171;--chip:#202a3d;--warn:#2b2411;--warnb:#7a6120}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;overflow-x:hidden;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:calc(env(safe-area-inset-top) + 8px) 14px 8px;display:flex;align-items:center;gap:10px}
+header h1{font-size:1.05rem;margin:0;font-weight:650;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#back{border:0;background:var(--chip);color:var(--ink);width:38px;height:38px;border-radius:12px;font-size:1.2rem;display:none;cursor:pointer}
+main{max-width:760px;margin:0 auto;padding:14px 14px calc(40px + env(safe-area-inset-bottom))}
+h2{font-size:1.15rem;margin:22px 0 8px}
+h3{font-size:1rem;margin:14px 0 6px}
+p{margin:.4em 0}
+.lead{color:var(--mut);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:12px 0}
+.mod{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:left;color:var(--ink);font:inherit;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-height:112px}
+.mod:active{transform:scale(.98)}
+.mod .ic{font-size:1.7rem;line-height:1}
+.mod b{font-size:.98rem}
+.mod small{color:var(--mut);font-size:.8rem;line-height:1.3}
+.mod .seen{color:var(--ok);font-size:.75rem}
+.cv{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:10px 0;line-height:0}
+.cv canvas{touch-action:none;display:block}
+.seg{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
+.seg button,.btn{flex:1 1 0;min-width:0;overflow-wrap:break-word;hyphens:auto;border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:10px 8px;border-radius:12px;font:inherit;font-size:.92rem;cursor:pointer;line-height:1.25}
+.seg button small{display:block;color:var(--mut);font-size:.72rem}
+.seg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.seg button.on small{color:#e6efff}
+.seg button:disabled{opacity:.4}
+.btn.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center}
+.row label{display:flex;align-items:center;gap:6px;font-size:.92rem}
+.sl{margin:8px 0}
+.sl.dis{opacity:.45}
+.slh{display:flex;justify-content:space-between;font-size:.9rem;color:var(--mut)}
+.slh b{color:var(--ink);font-weight:650}
+input[type=range]{width:100%;height:34px;accent-color:var(--acc);margin:0}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 12px}
+.tile.const{border:2px solid var(--ok)}
+.tile .k{font-size:.78rem;color:var(--mut)}
+.tile .v{font-size:1.2rem;font-weight:700}
+.tile .r{font-size:.78rem;color:var(--mut)}
+.tile .r.c{color:var(--ok);font-weight:600}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .2em;line-height:1.2}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .25em}
+.fr>span:last-child{padding:0 .25em}
+.formula{font-size:1.25rem;font-family:"Times New Roman",Georgia,serif;font-style:italic;padding:6px 0;text-align:center;overflow-x:auto}
+details.fc{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:8px 0;padding:0 14px}
+details.fc summary{padding:11px 0;cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.fc summary::after{content:"▾";color:var(--mut)}
+details.fc[open] summary::after{content:"▴"}
+details.fc .body{padding-bottom:12px}
+table.sym{border-collapse:collapse;width:100%;font-size:.9rem;margin:6px 0}
+table.sym td{padding:4px 6px;border-top:1px solid var(--line);vertical-align:top}
+table.sym td:first-child{font-family:"Times New Roman",Georgia,serif;font-style:italic;font-size:1.05rem;white-space:nowrap;width:1%}
+table.sym td:last-child{color:var(--mut);white-space:nowrap;text-align:right}
+.tip{background:var(--chip);border-radius:12px;padding:8px 12px;font-size:.92rem;margin:8px 0}
+.tip.warn{background:var(--warn);border:1px solid var(--warnb)}
+.ex{border-left:3px solid var(--acc);padding:2px 0 2px 10px;margin:8px 0;font-size:.92rem}
+.rule{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:8px 0;background:var(--card)}
+.rule.on{border:2px solid var(--acc)}
+.rule ul{margin:4px 0;padding-left:18px}
+.qz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin:10px 0}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:9px 12px;border-radius:10px;font:inherit;font-size:.93rem;cursor:pointer}
+.opt.right{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.wrong{background:var(--bad);color:#fff;border-color:var(--bad)}
+.why{font-size:.9rem;color:var(--mut)}
+.prob .inp{display:flex;gap:8px;align-items:center;margin:6px 0}
+.prob .inp label{flex:1;font-size:.92rem}
+.prob input[type=text]{width:110px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;text-align:right}
+.prob input.ok{border-color:var(--ok);background:rgba(34,197,94,.14)}
+.prob input.bad{border-color:var(--bad);background:rgba(239,68,68,.12)}
+.prob .u{width:52px;color:var(--mut);font-size:.9rem}
+.sol{font-size:.92rem;margin-top:6px}
+.sol ol{padding-left:20px;margin:4px 0}
+.sol li{margin:3px 0}
+.srch{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;margin:6px 0}
+.out{background:var(--chip);border-radius:12px;padding:8px 12px;font-size:.92rem;min-height:2.6em}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--chip);border-radius:999px;padding:3px 10px;font-size:.82rem}
+svg.sch{width:100%;height:auto;display:block}
+svg.sch line,svg.sch path,svg.sch rect{stroke:var(--ink);stroke-width:2;fill:none;stroke-linecap:round}
+svg.sch text{fill:var(--ink);font:13px system-ui}
+.bar{height:22px;border-radius:8px;display:flex;overflow:hidden;margin:4px 0;background:var(--chip)}
+.bar span{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem;white-space:nowrap;overflow:hidden}
+sup{font-size:.7em;line-height:0}
+small.hint{color:var(--mut)}
+
+.seg.g2{display:grid;grid-template-columns:1fr 1fr}
+
+</style>
+</head>
+<body>
+<header><button id="back" aria-label="Zurück">←</button><h1 id="title">Physik Lernapp</h1></header>
+<main id="app"></main>
+<script>
+'use strict';
+/* ---------- Konstanten ---------- */
+const E0 = 8.8541878128e-12;   // elektrische Feldkonstante in F/m
+const QE = 1.602176634e-19;    // Elementarladung in C
+const G = 9.81;                // Fallbeschleunigung in m/s²
+
+/* ---------- Helfer ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('pl_' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('pl_' + k, JSON.stringify(v)); } catch (e) { } }
+};
+const SUP = { '-': '⁻', '−': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+const plain = s => String(s).replace(/<sup>(.*?)<\/sup>/g, (m, t) => '·10' + t.replace(/./g, c => SUP[c] || c)).replace(/<[^>]+>/g, '');
+
+/* Zahl mit deutschem Komma und sinnvollen Stellen */
+function fmt(x, sig = 3) {
+  if (!isFinite(x)) return '–';
+  if (x === 0) return '0';
+  const a = Math.abs(x);
+  if (a >= 1e6 || a < 1e-3) {
+    let e = Math.floor(Math.log10(a));
+    let m = Number((x / Math.pow(10, e)).toPrecision(sig));
+    if (Math.abs(m) >= 10) { m /= 10; e++; }
+    return String(m).replace('.', ',') + '·10<sup>' + String(e).replace('-', '−') + '</sup>';
+  }
+  return String(Number(x.toPrecision(sig))).replace('.', ',');
+}
+/* Zahl mit SI-Vorsatz und Einheit */
+function si(x, unit, sig = 3) {
+  if (x === 0 || !isFinite(x)) return fmt(x) + ' ' + unit;
+  const P = [[1e-15, 'f'], [1e-12, 'p'], [1e-9, 'n'], [1e-6, 'µ'], [1e-3, 'm'], [1, ''], [1e3, 'k'], [1e6, 'M']];
+  const a = Math.abs(x);
+  let p = P[0];
+  for (const q of P) if (a >= q[0] * 0.9995) p = q;
+  return fmt(x / p[0], sig) + ' ' + p[1] + unit;
+}
+const siT = (x, u, s) => plain(si(x, u, s));
+const col = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fr = (a, b) => `<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const num = s => parseFloat(String(s).replace(',', '.').replace(/\s/g, ''));
+
+/* ---------- Canvas ---------- */
+function mkCanvas(wrap, ratio) {
+  const c = document.createElement('canvas');
+  wrap.appendChild(c);
+  const ctx = c.getContext('2d');
+  const o = {
+    c, ctx, W: 0, H: 0,
+    fit() {
+      const w = Math.max(200, wrap.clientWidth);
+      const h = Math.round(w * (typeof ratio === 'function' ? ratio(w) : ratio));
+      const d = window.devicePixelRatio || 1;
+      if (c.width !== Math.round(w * d) || c.height !== Math.round(h * d)) {
+        c.width = Math.round(w * d); c.height = Math.round(h * d);
+        c.style.width = w + 'px'; c.style.height = h + 'px';
+      }
+      ctx.setTransform(d, 0, 0, d, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      o.W = w; o.H = h;
+      return o;
+    }
+  };
+  return o;
+}
+function arrowHead(ctx, x, y, ang, s = 7) {
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x - s * Math.cos(ang - 0.4), y - s * Math.sin(ang - 0.4));
+  ctx.lineTo(x - s * Math.cos(ang + 0.4), y - s * Math.sin(ang + 0.4));
+  ctx.closePath(); ctx.fill();
+}
+/* Koordinatensystem mit Gitter */
+function frame(ctx, W, H, o) {
+  const L = 52, R = 16, T = 16, B = 36;
+  const w = W - L - R, h = H - T - B;
+  const X = x => L + x / o.xmax * w, Y = y => T + h - y / o.ymax * h;
+  ctx.save();
+  ctx.lineWidth = 1; ctx.font = '11px system-ui';
+  for (let i = 0; i <= o.nx; i++) {
+    const v = o.xmax * i / o.nx, x = X(v);
+    ctx.strokeStyle = col('--line'); ctx.beginPath(); ctx.moveTo(x, T); ctx.lineTo(x, T + h); ctx.stroke();
+    ctx.fillStyle = col('--mut'); ctx.textAlign = 'center'; ctx.fillText(plain(o.xf(v)), x, T + h + 15);
+  }
+  for (let i = 0; i <= o.ny; i++) {
+    const v = o.ymax * i / o.ny, y = Y(v);
+    ctx.strokeStyle = col('--line'); ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(L + w, y); ctx.stroke();
+    ctx.fillStyle = col('--mut'); ctx.textAlign = 'right'; ctx.fillText(plain(o.yf(v)), L - 6, y + 4);
+  }
+  ctx.strokeStyle = col('--ink'); ctx.fillStyle = col('--ink'); ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.moveTo(L, T + h); ctx.lineTo(L + w + 6, T + h); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(L, T + h); ctx.lineTo(L, T - 4); ctx.stroke();
+  arrowHead(ctx, L + w + 8, T + h, 0, 7); arrowHead(ctx, L, T - 6, -Math.PI / 2, 7);
+  ctx.font = 'bold 12px system-ui'; ctx.textAlign = 'right'; ctx.fillText(o.xlab, L + w, H - 4);
+  ctx.textAlign = 'left'; ctx.fillText(o.ylab, L + 6, T + 8);
+  ctx.restore();
+  return { X, Y, L, T, w, h };
+}
+
+/* ---------- Oberflächen-Bausteine ---------- */
+function slider(parent, o, cb) {
+  const w = document.createElement('div');
+  w.className = 'sl';
+  const log = !!o.log;
+  const pos = log ? 1000 * Math.log(o.val / o.min) / Math.log(o.max / o.min) : o.val;
+  w.innerHTML = `<div class="slh"><span>${o.label}</span><b></b></div><input type="range" min="${log ? 0 : o.min}" max="${log ? 1000 : o.max}" step="${log ? 1 : o.step}" value="${pos}">`;
+  const inp = w.querySelector('input'), out = w.querySelector('b');
+  const toV = p => log ? Number((o.min * Math.pow(o.max / o.min, p / 1000)).toPrecision(2)) : +p;
+  const upd = () => { out.innerHTML = o.f(toV(+inp.value)); };
+  inp.addEventListener('input', () => { upd(); cb(toV(+inp.value)); });
+  upd();
+  parent.appendChild(w);
+  return {
+    el: w, inp,
+    set(v) { inp.value = log ? 1000 * Math.log(v / o.min) / Math.log(o.max / o.min) : v; upd(); },
+    get() { return toV(+inp.value); },
+    disable(b) { inp.disabled = b; w.classList.toggle('dis', b); },
+    label(t) { out.innerHTML = t; }
+  };
+}
+/* Formel-Karte zum Aufklappen: {name, f, syms:[[Symbol, Bedeutung, Einheit]], expl, tip, ex, open} */
+function fcard(o) {
+  const syms = (o.syms || []).map(s => `<tr><td>${s[0]}</td><td>${s[1]}</td><td>${s[2] || ''}</td></tr>`).join('');
+  return `<details class="fc"${o.open ? ' open' : ''}><summary><span>${o.name}</span></summary><div class="body">
+    <div class="formula">${o.f}</div>
+    ${syms ? `<table class="sym">${syms}</table>` : ''}
+    ${o.expl ? `<p>${o.expl}</p>` : ''}
+    ${o.tip ? `<div class="tip">💡 ${o.tip}</div>` : ''}
+    ${o.ex ? `<div class="ex">${o.ex}</div>` : ''}
+  </div></details>`;
+}
+/* Quiz: qs = [{id, q, o:[…], a:Index, why}] */
+function quiz(parent, qs, onChange) {
+  const done = store.get('quizok', {});
+  qs.forEach(q => {
+    const d = document.createElement('div');
+    d.className = 'qz';
+    d.innerHTML = `<p><b>${q.q}</b></p><div class="opts">${q.o.map((t, j) => `<button class="opt" data-j="${j}">${t}</button>`).join('')}</div><p class="why" hidden>${q.why || ''}</p>`;
+    let answered = false;
+    d.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
+      if (answered) return;
+      answered = true;
+      const j = +b.dataset.j;
+      d.querySelectorAll('.opt')[q.a].classList.add('right');
+      if (j !== q.a) b.classList.add('wrong');
+      d.querySelector('.why').hidden = false;
+      if (j === q.a) { const dd = store.get('quizok', {}); dd[q.id] = 1; store.set('quizok', dd); }
+      if (onChange) onChange();
+    }));
+    parent.appendChild(d);
+  });
+}
+
+</script>
+<script>
+'use strict';
+/* Modul 1: Elektrisches Feld, Feldlinien, Äquipotentiallinien */
+function modField(root) {
+  const st = { tool: 'move', eq: false, fl: true, plates: false, charges: [], probes: [], drag: null };
+  const PL = { x0: .2, x1: .8, yT: .3, yB: .7, n: 25 };
+  const presets = {
+    dip: () => { st.plates = false; st.charges = [{ x: .3, y: .5, q: 1 }, { x: .7, y: .5, q: -1 }]; },
+    same: () => { st.plates = false; st.charges = [{ x: .32, y: .5, q: 1 }, { x: .68, y: .5, q: 1 }]; },
+    single: () => { st.plates = false; st.charges = [{ x: .5, y: .5, q: 1 }]; },
+    plates: () => { st.plates = true; st.charges = []; }
+  };
+  presets.dip();
+
+  root.innerHTML = `
+  <p class="lead">Tippe auf die Fläche, setze Ladungen und ziehe sie herum. Die Feldlinien passen sich sofort an.</p>
+  <div class="seg g2" id="pre">
+    <button data-p="dip" class="on">Dipol<small>+ und −</small></button>
+    <button data-p="same">Gleichnamig<small>+ und +</small></button>
+    <button data-p="single">Einzelladung</button>
+    <button data-p="plates">Plattenkondensator</button>
+  </div>
+  <div class="seg g2" id="tools">
+    <button data-t="move" class="on">✋ Verschieben</button>
+    <button data-t="add+">＋ Ladung</button>
+    <button data-t="add-">－ Ladung</button>
+    <button data-t="measure">📍 Messpunkt</button>
+  </div>
+  <div class="cv" id="cv"></div>
+  <div class="row">
+    <label><input type="checkbox" id="fl" checked> Feldlinien</label>
+    <label><input type="checkbox" id="eq"> Äquipotentiallinien</label>
+    <button class="btn" id="clr" style="flex:0 0 auto">Leeren</button>
+  </div>
+  <div class="out" id="ro"></div>
+  <h2>Was du siehst</h2>
+  <div class="card"><ul style="margin:0;padding-left:18px">
+    <li>Feldlinien <b>beginnen auf + und enden auf −</b>. Sie kreuzen sich nie.</li>
+    <li>Die Pfeile zeigen die Kraftrichtung auf eine <b>positive</b> Probeladung.</li>
+    <li><b>Je enger die Linien, desto höher die Feldstärke.</b> Tippe mit dem Messpunkt an zwei Stellen und vergleiche.</li>
+    <li>Auf <b>leitenden Oberflächen</b> (z. B. Kondensatorplatten) enden die Feldlinien immer <b>senkrecht (⊥)</b>.</li>
+    <li><b>Homogenes Feld:</b> parallele Linien mit gleichem Abstand. Das gibt es im Inneren des Plattenkondensators. Am Rand ist das Feld <b>nicht homogen</b> (Linien biegen sich nach außen).</li>
+    <li><b>Äquipotentiallinien</b> (in 3D: Äquipotentialflächen) verbinden Punkte mit gleicher Spannung. Sie stehen <b>senkrecht auf den Feldlinien</b>. Entlang einer Linie ändert sich die Spannung nicht, quer dazu schon.</li>
+  </ul></div>
+  <h2>Quiz</h2><div id="qz"></div>`;
+
+  const cv = mkCanvas($('#cv', root), w => w > 500 ? .62 : .95);
+  const ro = $('#ro', root);
+  const K = 1000;
+
+  function pcs(W, H) {
+    if (st.plates) {
+      const a = [];
+      for (let i = 0; i < PL.n; i++) {
+        const x = (PL.x0 + (PL.x1 - PL.x0) * i / (PL.n - 1)) * W;
+        a.push({ x, y: PL.yT * H, q: 1.2 }, { x, y: PL.yB * H, q: -1.2 });
+      }
+      return a;
+    }
+    return st.charges.map(c => ({ x: c.x * W, y: c.y * H, q: c.q }));
+  }
+  function fieldAt(x, y, cs) {
+    let ex = 0, ey = 0;
+    for (const c of cs) {
+      const dx = x - c.x, dy = y - c.y;
+      let r2 = dx * dx + dy * dy; if (r2 < 16) r2 = 16;
+      const k = K * c.q / (r2 * Math.sqrt(r2));
+      ex += k * dx; ey += k * dy;
+    }
+    return [ex, ey];
+  }
+  function potAt(x, y, cs) {
+    let p = 0;
+    for (const c of cs) { let r2 = (x - c.x) ** 2 + (y - c.y) ** 2; if (r2 < 16) r2 = 16; p += K * c.q / Math.sqrt(r2); }
+    return p;
+  }
+  function starts(cs, W, H) {
+    const a = [];
+    if (st.plates) {
+      const x0 = PL.x0 * W, x1 = PL.x1 * W, yT = PL.yT * H;
+      for (let i = 0; i < 22; i++) a.push({ x: x0 + (x1 - x0) * (i + .5) / 22, y: yT + 3, dir: 1 });
+      [[-5, -3], [4, -6], [-12, -3]].forEach(([dx, dy]) => { a.push({ x: x0 + dx, y: yT + dy, dir: 1 }); a.push({ x: x1 - dx, y: yT + dy, dir: 1 }); });
+      return a;
+    }
+    const pos = cs.filter(c => c.q > 0), src = pos.length ? pos : cs.filter(c => c.q < 0), dir = pos.length ? 1 : -1;
+    src.forEach(c => {
+      const n = Math.round(14 * Math.abs(c.q)) + 2;
+      for (let i = 0; i < n; i++) { const t = 2 * Math.PI * (i + .37) / n; a.push({ x: c.x + 7 * Math.cos(t), y: c.y + 7 * Math.sin(t), dir }); }
+    });
+    return a;
+  }
+  function trace(s, cs, W, H) {
+    let { x, y } = s; const dir = s.dir;
+    const sink = cs.filter(c => c.q * dir < 0);
+    const pts = [[x, y]];
+    for (let i = 0; i < 1600; i++) {
+      const [ex, ey] = fieldAt(x, y, cs), m = Math.hypot(ex, ey);
+      if (m < 1e-9) break;
+      x += dir * ex / m * 2.2; y += dir * ey / m * 2.2;
+      pts.push([x, y]);
+      if (x < -4 || x > W + 4 || y < -4 || y > H + 4) break;
+      if (sink.some(c => (x - c.x) ** 2 + (y - c.y) ** 2 < 49)) break;
+    }
+    return { pts, dir };
+  }
+  function drawLines(ctx, cs, W, H) {
+    ctx.strokeStyle = col('--fld'); ctx.fillStyle = col('--fld'); ctx.lineWidth = 1.5;
+    starts(cs, W, H).forEach(s => {
+      const { pts, dir } = trace(s, cs, W, H);
+      if (pts.length < 3) return;
+      ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.stroke();
+      const k = Math.floor(pts.length * .5);
+      if (k > 0 && k < pts.length - 1) {
+        const a = pts[k], b = pts[k + 1];
+        arrowHead(ctx, a[0], a[1], Math.atan2(dir * (b[1] - a[1]), dir * (b[0] - a[0])), 7);
+      }
+    });
+  }
+  function drawEq(ctx, cs, W, H) {
+    const cell = 7, nx = Math.ceil(W / cell) + 1, ny = Math.ceil(H / cell) + 1;
+    const v = new Float32Array(nx * ny), ab = [];
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) { const p = potAt(i * cell, j * cell, cs); v[j * nx + i] = p; ab.push(Math.abs(p)); }
+    ab.sort((a, b) => a - b);
+    const P = ab[Math.floor(ab.length * .92)] || 1;
+    ctx.strokeStyle = col('--eq'); ctx.lineWidth = 1.2;
+    const segs = { 1: [[3, 0]], 2: [[0, 1]], 3: [[3, 1]], 4: [[1, 2]], 5: [[3, 0], [1, 2]], 6: [[0, 2]], 7: [[3, 2]], 8: [[2, 3]], 9: [[0, 2]], 10: [[0, 1], [2, 3]], 11: [[1, 2]], 12: [[1, 3]], 13: [[0, 1]], 14: [[3, 0]] };
+    for (let l = -7; l <= 7; l++) {
+      const lv = P * l / 7;
+      ctx.lineWidth = l === 0 ? 2 : 1.1;
+      ctx.beginPath();
+      for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
+        const v0 = v[j * nx + i], v1 = v[j * nx + i + 1], v2 = v[(j + 1) * nx + i + 1], v3 = v[(j + 1) * nx + i];
+        const idx = (v0 > lv ? 1 : 0) | (v1 > lv ? 2 : 0) | (v2 > lv ? 4 : 0) | (v3 > lv ? 8 : 0);
+        if (idx === 0 || idx === 15) continue;
+        const x = i * cell, y = j * cell, t = (a, b) => (lv - a) / (b - a);
+        const Pp = [[x + cell * t(v0, v1), y], [x + cell, y + cell * t(v1, v2)], [x + cell * t(v3, v2), y + cell], [x, y + cell * t(v0, v3)]];
+        segs[idx].forEach(s => { ctx.moveTo(Pp[s[0]][0], Pp[s[0]][1]); ctx.lineTo(Pp[s[1]][0], Pp[s[1]][1]); });
+      }
+      ctx.stroke();
+    }
+  }
+  function sym(ctx, x, y, q, r) {
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 7);
+    ctx.fillStyle = q > 0 ? col('--pos') : col('--neg'); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath();
+    ctx.moveTo(x - r * .5, y); ctx.lineTo(x + r * .5, y);
+    if (q > 0) { ctx.moveTo(x, y - r * .5); ctx.lineTo(x, y + r * .5); }
+    ctx.stroke();
+  }
+  function draw() {
+    cv.fit();
+    const { ctx, W, H } = cv;
+    const cs = pcs(W, H);
+    if (st.eq) drawEq(ctx, cs, W, H);
+    if (st.fl) drawLines(ctx, cs, W, H);
+    if (st.plates) {
+      const x0 = PL.x0 * W, x1 = PL.x1 * W, yT = PL.yT * H, yB = PL.yB * H;
+      ctx.fillStyle = col('--pos'); ctx.fillRect(x0 - 3, yT - 7, x1 - x0 + 6, 7);
+      ctx.fillStyle = col('--neg'); ctx.fillRect(x0 - 3, yB, x1 - x0 + 6, 7);
+      ctx.font = 'bold 13px system-ui'; ctx.textAlign = 'center';
+      for (let i = 0; i < PL.n; i += 2) {
+        const x = x0 + (x1 - x0) * i / (PL.n - 1);
+        ctx.fillStyle = col('--pos'); ctx.fillText('+', x, yT - 11);
+        ctx.fillStyle = col('--neg'); ctx.fillText('−', x, yB + 20);
+      }
+      ctx.fillStyle = col('--mut'); ctx.font = '12px system-ui';
+      ctx.fillText('Mitte: homogen', (x0 + x1) / 2, (yT + yB) / 2 + 4);
+      ctx.fillText('Rand: nicht homogen', x1 + 4 > W - 70 ? W - 70 : x1 + 4, yT - 24);
+    } else {
+      st.charges.forEach(c => sym(ctx, c.x * W, c.y * H, c.q, 11));
+    }
+    st.probes.forEach((p, i) => {
+      const x = p.x * W, y = p.y * H;
+      ctx.strokeStyle = col('--ink'); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 6, 0, 7); ctx.stroke();
+      ctx.fillStyle = col('--ink'); ctx.font = 'bold 13px system-ui'; ctx.textAlign = 'left'; ctx.fillText(i ? 'B' : 'A', x + 9, y - 7);
+    });
+    readout(cs, W, H);
+  }
+  function readout(cs, W, H) {
+    if (!st.probes.length) {
+      ro.innerHTML = st.tool === 'measure' ? '📍 Tippe zwei Punkte an (A und B) und vergleiche die Feldstärke.'
+        : st.plates ? 'Im Plattenkondensator-Modus kannst du mit dem 📍 Messpunkt messen. Vergleiche Mitte und Rand!'
+        : 'Ziehe die Ladungen mit dem Finger. Mit ＋/－ setzt du neue Ladungen (maximal 6).';
+      return;
+    }
+    const vals = st.probes.map(p => { const [ex, ey] = fieldAt(p.x * W, p.y * H, cs); return Math.hypot(ex, ey) / 0.4; });
+    let t = vals.map((v, i) => `${i ? 'B' : 'A'}: E ≈ ${fmt(v, 2)} (relative Einheit)`).join(' · ');
+    if (vals.length === 2 && vals[0] > 0 && vals[1] > 0) {
+      const r = vals[1] / vals[0];
+      t += `<br>${r > 1.05 ? `B hat ein <b>${fmt(r, 2)}×</b> stärkeres Feld als A.` : r < .95 ? `A hat ein <b>${fmt(1 / r, 2)}×</b> stärkeres Feld als B.` : 'Das Feld ist an beiden Punkten (fast) gleich stark → <b>homogen</b>.'}`;
+    }
+    ro.innerHTML = t;
+  }
+
+  /* Bedienung */
+  const pos = e => { const r = cv.c.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height }; };
+  let raf = 0; const redraw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; draw(); }); };
+  cv.c.addEventListener('pointerdown', e => {
+    const p = pos(e);
+    if (st.tool === 'measure') {
+      if (st.probes.length >= 2) st.probes = [];
+      st.probes.push(p); draw(); return;
+    }
+    if (st.plates) return;
+    let best = -1, bd = 1e9;
+    st.charges.forEach((c, i) => { const d = Math.hypot((c.x - p.x) * cv.W, (c.y - p.y) * cv.H); if (d < bd) { bd = d; best = i; } });
+    if (best >= 0 && bd < 22) st.drag = best;
+    else if ((st.tool === 'add+' || st.tool === 'add-') && st.charges.length < 6) {
+      st.charges.push({ x: p.x, y: p.y, q: st.tool === 'add+' ? 1 : -1 }); st.drag = st.charges.length - 1;
+    }
+    if (st.drag !== null) cv.c.setPointerCapture(e.pointerId);
+    redraw();
+  });
+  cv.c.addEventListener('pointermove', e => {
+    if (st.drag === null) return;
+    const p = pos(e); const c = st.charges[st.drag];
+    c.x = clamp(p.x, .03, .97); c.y = clamp(p.y, .03, .97); redraw();
+  });
+  const end = () => { st.drag = null; };
+  cv.c.addEventListener('pointerup', end); cv.c.addEventListener('pointercancel', end);
+
+  $('#pre', root).addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    presets[b.dataset.p](); st.probes = [];
+    $('#pre', root).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    const tb = $('#tools', root).querySelectorAll('button');
+    tb.forEach(x => { x.disabled = st.plates && x.dataset.t !== 'measure'; });
+    if (st.plates) setTool('measure'); else if (st.tool === 'measure' && false) setTool('move');
+    draw();
+  });
+  function setTool(t) {
+    st.tool = t;
+    $('#tools', root).querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.t === t));
+  }
+  $('#tools', root).addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.disabled) return; setTool(b.dataset.t); draw(); });
+  $('#fl', root).addEventListener('change', e => { st.fl = e.target.checked; draw(); });
+  $('#eq', root).addEventListener('change', e => { st.eq = e.target.checked; draw(); });
+  $('#clr', root).addEventListener('click', () => {
+    if (st.plates) { st.probes = []; } else { st.charges = []; st.probes = []; }
+    draw();
+  });
+  quiz($('#qz', root), quizFor('field'));
+  draw();
+  return { resize: draw };
+}
+
+</script>
+<script>
+'use strict';
+/* Modul 2: Plattenkondensator (Experiment-Simulator) */
+function modCap(root) {
+  const S = { U: 2000, d: 3, D: 12, er: 1, mode: 'U', Q: 0 };
+  const der = () => {
+    const A = Math.PI * Math.pow(S.D / 200, 2);
+    const C = E0 * S.er * A / (S.d / 1000);
+    let U, Q;
+    if (S.mode === 'U') { U = S.U; Q = C * U; } else { Q = S.Q; U = Q / C; }
+    return { A, C, U, Q, E: U / (S.d / 1000), W: .5 * Q * U };
+  };
+  const R0 = (() => { const A = Math.PI * .06 * .06, C = E0 * A / .003, U = 2000; return { C, U, Q: C * U, E: U / .003, W: .5 * C * U * U }; })();
+
+  root.innerHTML = `
+  <p class="lead">Ein Plattenkondensator speichert Ladung. Verändere Abstand, Fläche und Material und beobachte, was <b>konstant bleibt</b> und was sich ändert.</p>
+  <div class="seg" id="cm">
+    <button data-m="U" class="on">🔌 Quelle angeschlossen<small>U bleibt konstant</small></button>
+    <button data-m="Q">✂ abgeklemmt<small>Q bleibt konstant</small></button>
+  </div>
+  <div class="cv" id="cv"></div>
+  <div class="tiles" id="tiles"></div>
+  <div class="card" id="sl"></div>
+  <div class="row"><button class="btn primary" id="b1b">Aufgabe 1b nachstellen</button><button class="btn" id="rst">Zurücksetzen</button></div>
+  <div class="out" id="msg">Startwerte wie in deinem Aufgabenblatt: Ø 12 cm, d = 3 mm, U = 2 kV.</div>
+  <h2>Die Regeln</h2><div id="rules"></div>
+  <h2>Formeln erklärt</h2><div id="fc"></div>
+  <h2>Quiz</h2><div id="qz"></div>`;
+
+  const cv = mkCanvas($('#cv', root), .74);
+  const sl = {};
+  const box = $('#sl', root);
+  const upd = () => { draw(); };
+  sl.U = slider(box, { label: 'Spannung U', min: 0, max: 6000, step: 50, val: S.U, f: v => si(v, 'V') }, v => { S.U = v; upd(); });
+  sl.d = slider(box, { label: 'Plattenabstand d', min: 1, max: 20, step: .5, val: S.d, f: v => fmt(v) + ' mm' }, v => { S.d = v; upd(); });
+  sl.D = slider(box, { label: 'Plattendurchmesser D (Fläche A = π·(D/2)²)', min: 2, max: 20, step: 1, val: S.D, f: v => v + ' cm' }, v => { S.D = v; upd(); });
+  sl.er = slider(box, { label: 'Dielektrikum εr (1 = Luft, Glas ≈ 5–10)', min: 1, max: 10, step: .05, val: S.er, f: v => fmt(v) }, v => { S.er = v; upd(); });
+
+  function setMode(m) {
+    if (m === S.mode) return;
+    const r = der();
+    if (m === 'Q') { S.Q = r.Q; } else { S.U = clamp(Math.round(r.U / 50) * 50, 0, 6000); sl.U.set(S.U); }
+    S.mode = m;
+    $('#cm', root).querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.m === m));
+    upd();
+  }
+  $('#cm', root).addEventListener('click', e => { const b = e.target.closest('button'); if (b) setMode(b.dataset.m); });
+  $('#rst', root).addEventListener('click', () => {
+    Object.assign(S, { U: 2000, d: 3, D: 12, er: 1, mode: 'U', Q: 0 });
+    sl.U.set(2000); sl.d.set(3); sl.D.set(12); sl.er.set(1);
+    $('#cm', root).querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.m === 'U'));
+    $('#msg', root).innerHTML = 'Zurückgesetzt auf Ø 12 cm, d = 3 mm, U = 2 kV.';
+    upd();
+  });
+  $('#b1b', root).addEventListener('click', () => {
+    Object.assign(S, { U: 2000, d: 3, D: 12, er: 1, mode: 'U' });
+    S.Q = der().Q; S.mode = 'Q'; S.er = 1.25;
+    sl.U.set(2000); sl.d.set(3); sl.D.set(12); sl.er.set(1.25);
+    $('#cm', root).querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.m === 'Q'));
+    $('#msg', root).innerHTML = 'Aufgabe 1b: Quelle abgeklemmt, Glasscheibe eingeschoben. Die Ladung Q bleibt gleich, C wächst auf das εr-Fache, deshalb sinkt U von 2000 V auf 1600 V. Umgekehrt gilt: <b>εr = U₁ / U₂ = 2000 V / 1600 V = 1,25</b>.';
+    upd();
+  });
+
+  const ratio = (x, x0) => { const r = x / x0; return Math.abs(r - 1) < .005 ? 'wie am Start' : '×' + fmt(r, 3) + ' gegenüber Start'; };
+  function tiles(r) {
+    const T = [['C', 'Kapazität C', si(r.C, 'F'), ratio(r.C, R0.C), false],
+    ['Q', 'Ladung Q', si(r.Q, 'C'), ratio(r.Q, R0.Q), S.mode === 'Q'],
+    ['U', 'Spannung U', si(r.U, 'V'), ratio(r.U, R0.U), S.mode === 'U'],
+    ['E', 'Feldstärke E = U/d', si(r.E, 'V/m'), ratio(r.E, R0.E), false]];
+    $('#tiles', root).innerHTML = T.map(t => `<div class="tile${t[4] ? ' const' : ''}"><div class="k">${t[1]}${t[4] ? ' · bleibt konstant' : ''}</div><div class="v">${t[2]}</div><div class="r">${t[3]}</div></div>`).join('')
+      + `<div class="tile" style="grid-column:1/3"><div class="k">Gespeicherte Energie W = ½·Q·U <small>(Ergänzung)</small></div><div class="v">${si(r.W, 'J')}</div></div>`;
+  }
+  function rules() {
+    $('#rules', root).innerHTML = `
+    <div class="rule${S.mode === 'U' ? ' on' : ''}"><b>🔌 Spannungsquelle angeschlossen → U = konstant</b><ul>
+      <li>Q ~ 1/d: je <b>geringer der Abstand</b>, desto mehr Kapazität (für Ladung).</li>
+      <li>Q ~ A: je <b>größer die Plattenfläche</b>, desto mehr Ladung passt drauf.</li>
+      <li>εr (Material des Dielektrikums) wirkt wie ein Faktor auf C und damit auf Q.</li></ul></div>
+    <div class="rule${S.mode === 'Q' ? ' on' : ''}"><b>✂ Kondensator abgeklemmt → Q = konstant</b><ul>
+      <li>Die Ladung kann nicht abfließen, also bleibt Q gleich.</li>
+      <li>U ~ d: Abstand doppelt → Spannung doppelt.</li>
+      <li>Dann ist E = U/d <b>konstant</b>: Die Feldstärke hängt nur von der Ladung pro Fläche ab.</li>
+      <li>Mit Dielektrikum: C wird εr-mal größer, also sinkt U auf U₁/εr.</li></ul></div>`;
+  }
+  function draw() {
+    const r = der();
+    cv.fit();
+    const { ctx, W, H } = cv;
+    const gap = 60 + (S.d - 1) / 19 * (H * .34);
+    const pw = W * (.22 + .5 * (S.D - 2) / 18);
+    const cx = W * .52, x0 = cx - pw / 2;
+    const yT = H / 2 - gap / 2, yB = H / 2 + gap / 2;
+    if (S.er > 1) { ctx.fillStyle = col('--eq'); ctx.globalAlpha = .12 + .4 * (S.er - 1) / 9; ctx.fillRect(x0, yT, pw, gap); ctx.globalAlpha = 1; ctx.fillStyle = col('--mut'); ctx.font = '12px system-ui'; ctx.textAlign = 'left'; ctx.fillText('Dielektrikum εr = ' + fmt(S.er), x0, yT - 11); }
+    ctx.fillStyle = col('--pos'); ctx.fillRect(x0, yT - 7, pw, 7);
+    ctx.fillStyle = col('--neg'); ctx.fillRect(x0, yB, pw, 7);
+    const nq = clamp(Math.round(8 * r.Q / R0.Q * (pw / (W * .4))), 1, 40);
+    ctx.font = 'bold 14px system-ui'; ctx.textAlign = 'center';
+    for (let i = 0; i < nq; i++) {
+      const x = x0 + pw * (i + .5) / nq;
+      ctx.fillStyle = col('--pos'); ctx.fillText('+', x, yT + 14);
+      ctx.fillStyle = col('--neg'); ctx.fillText('−', x, yB - 4);
+    }
+    const nl = clamp(Math.round(8 * r.E / R0.E * (pw / (W * .4))), 1, 60);
+    ctx.strokeStyle = col('--fld'); ctx.fillStyle = col('--fld'); ctx.lineWidth = 1.5;
+    for (let i = 0; i < nl; i++) {
+      const x = x0 + pw * (i + .5) / nl;
+      ctx.beginPath(); ctx.moveTo(x, yT + 22); ctx.lineTo(x, yB - 19); ctx.stroke();
+      arrowHead(ctx, x, yB - 17, Math.PI / 2, 6);
+    }
+    const ax = x0 + pw + 18;
+    ctx.strokeStyle = col('--ink'); ctx.fillStyle = col('--ink'); ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(ax, yT); ctx.lineTo(ax, yB); ctx.stroke();
+    arrowHead(ctx, ax, yT, -Math.PI / 2, 6); arrowHead(ctx, ax, yB, Math.PI / 2, 6);
+    ctx.font = '12px system-ui'; ctx.textAlign = 'center'; ctx.save(); ctx.translate(ax + 14, H / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('d = ' + fmt(S.d) + ' mm', 0, 0); ctx.restore();
+    const by = yB + 26;
+    ctx.beginPath(); ctx.moveTo(x0, by); ctx.lineTo(x0 + pw, by); ctx.stroke();
+    arrowHead(ctx, x0, by, Math.PI, 6); arrowHead(ctx, x0 + pw, by, 0, 6);
+    ctx.textAlign = 'center'; ctx.fillText('D = ' + S.D + ' cm  →  A = ' + fmt(r.A * 1e4, 3) + ' cm²', cx, by + 16);
+    /* Quelle */
+    const bx = 26, my = H / 2;
+    ctx.strokeStyle = col('--ink'); ctx.lineWidth = 2; ctx.setLineDash(S.mode === 'Q' ? [5, 5] : []);
+    ctx.beginPath(); ctx.moveTo(cx, yT - 7); ctx.lineTo(cx, yT - 24); ctx.lineTo(bx, yT - 24); ctx.lineTo(bx, my - 8);
+    ctx.moveTo(bx, my + 2); ctx.lineTo(bx, yB + 24); ctx.lineTo(cx, yB + 24); ctx.lineTo(cx, yB + 7); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(bx - 11, my - 8); ctx.lineTo(bx + 11, my - 8); ctx.moveTo(bx - 6, my + 2); ctx.lineTo(bx + 6, my + 2); ctx.stroke();
+    ctx.fillStyle = col('--mut'); ctx.font = '12px system-ui'; ctx.textAlign = 'left';
+    ctx.fillText(S.mode === 'U' ? 'U = ' + siT(r.U, 'V') : '✂ abgeklemmt', 6, H - 8);
+    if (S.mode === 'Q') ctx.fillText('U = ' + siT(r.U, 'V') + ' (Voltmeter)', 6, H - 24);
+    tiles(r); rules();
+    sl.U.disable(S.mode === 'Q');
+    if (S.mode === 'Q') { sl.U.inp.value = clamp(r.U, 0, 6000); sl.U.label(si(r.U, 'V') + ' <small>(berechnet)</small>'); }
+  }
+
+  $('#fc', root).innerHTML = [
+    fcard({
+      name: 'Kapazität eines Plattenkondensators', f: 'C = ε<sub>0</sub> · ε<sub>r</sub> · ' + fr('A', 'd'), open: true,
+      syms: [['C', 'Kapazität: wie viel Ladung pro Volt passt auf den Kondensator', 'F (Farad)'], ['ε<sub>0</sub>', 'elektrische Feldkonstante = 8,854·10⁻¹²', 'F/m'], ['ε<sub>r</sub>', 'Materialkonstante des Dielektrikums (Vakuum/Luft ≈ 1)', 'ohne Einheit'], ['A', 'Fläche einer Platte (Kreis: A = π·r²)', 'm²'], ['d', 'Abstand der Platten', 'm']],
+      expl: 'Große Platten und kleiner Abstand → große Kapazität. Das sind genau deine Proportionalitäten: <b>C ~ A</b>, <b>C ~ 1/d</b>, zusammen <b>C ~ A/d</b>.',
+      tip: 'Rechne Abstand und Durchmesser immer erst in Meter um: 3 mm = 0,003 m, Radius 6 cm = 0,06 m.',
+      ex: 'Aufgabe 1a: A = π·(0,06 m)² = 0,01131 m², C = 8,854·10⁻¹²·0,01131/0,003 = 3,34·10⁻¹¹ F = <b>33,4 pF</b>'
+    }),
+    fcard({
+      name: 'Ladung auf dem Kondensator', f: 'Q = C · U',
+      syms: [['Q', 'gespeicherte Ladung', 'C (Coulomb)'], ['C', 'Kapazität', 'F'], ['U', 'Spannung zwischen den Platten', 'V']],
+      expl: 'Je höher die Spannung, desto mehr Ladung. Die Kapazität ist die <b>Proportionalitätskonstante</b> (im Q-U-Diagramm die Steigung der Geraden).',
+      ex: '4 µF · 12 V = 48 µC'
+    }),
+    fcard({
+      name: 'Feldstärke im Plattenkondensator', f: 'E = ' + fr('U', 'd'),
+      syms: [['E', 'elektrische Feldstärke (im homogenen Feld überall gleich)', 'V/m'], ['U', 'Spannung zwischen den Platten', 'V'], ['d', 'Plattenabstand', 'm']],
+      expl: 'Die Spannung verteilt sich auf den Abstand: Je kürzer der Weg, desto steiler das „Spannungsgefälle“, also desto stärker das Feld.',
+      ex: 'Aufgabe 1a: E = 2000 V / 0,003 m = 666 667 V/m ≈ <b>667 kV/m</b>'
+    }),
+    fcard({
+      name: 'Energie im Kondensator (Ergänzung)', f: 'W = ½ · C · U² = ½ · Q · U',
+      syms: [['W', 'gespeicherte Energie', 'J (Joule)']],
+      expl: 'Beim Aufladen steigt die Spannung von 0 bis U. Im Arbeitsdiagramm ist W die Dreiecksfläche unter der Q-U-Geraden, deshalb der Faktor ½.'
+    })
+  ].join('');
+  quiz($('#qz', root), quizFor('cap'));
+  draw();
+  return { resize: draw };
+}
+
+</script>
+<script>
+'use strict';
+/* Modul 3: Kondensatoren einzeln, in Reihe, parallel */
+function modCirc(root) {
+  const S = { C1: 4, C2: 10, U: 12, mode: 'ser' };
+  root.innerHTML = `
+  <p class="lead">Zwei Kondensatoren an einer Gleichspannungsquelle. Wähle die Schaltung und sieh, wie sich Spannung, Ladung und Gesamtkapazität verteilen. Startwerte aus deiner Aufgabe 2: 4 µF, 10 µF, 12 V.</p>
+  <div class="seg" id="cm">
+    <button data-m="one">a) einzeln</button>
+    <button data-m="ser" class="on">b) Reihe</button>
+    <button data-m="par">c) Parallel</button>
+  </div>
+  <div class="card" id="svgc"></div>
+  <div class="card" id="sl"></div>
+  <div class="tiles" id="tiles"></div>
+  <div id="bars"></div>
+  <h2>Rechenweg</h2><div class="card sol" id="steps"></div>
+  <h2>Merke</h2><div id="rule"></div>
+  <h2>Formeln erklärt</h2><div id="fc"></div>
+  <h2>Quiz</h2><div id="qz"></div>`;
+  const box = $('#sl', root);
+  const redo = () => draw();
+  const s1 = slider(box, { label: 'Kondensator C₁', min: 1, max: 20, step: .5, val: S.C1, f: v => fmt(v) + ' µF' }, v => { S.C1 = v; redo(); });
+  const s2 = slider(box, { label: 'Kondensator C₂', min: 1, max: 20, step: .5, val: S.C2, f: v => fmt(v) + ' µF' }, v => { S.C2 = v; redo(); });
+  const s3 = slider(box, { label: 'Spannung der Quelle U', min: 1, max: 24, step: 1, val: S.U, f: v => v + ' V' }, v => { S.U = v; redo(); });
+  $('#cm', root).addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    S.mode = b.dataset.m;
+    $('#cm', root).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    draw();
+  });
+
+  const cap = (x, y, vert, lab) => vert
+    ? `<line x1="${x}" y1="${y - 30}" x2="${x}" y2="${y - 6}"/><line x1="${x - 16}" y1="${y - 6}" x2="${x + 16}" y2="${y - 6}"/><line x1="${x - 16}" y1="${y + 6}" x2="${x + 16}" y2="${y + 6}"/><line x1="${x}" y1="${y + 6}" x2="${x}" y2="${y + 30}"/><text x="${x + 22}" y="${y + 5}">${lab}</text>`
+    : `<line x1="${x - 30}" y1="${y}" x2="${x - 6}" y2="${y}"/><line x1="${x - 6}" y1="${y - 16}" x2="${x - 6}" y2="${y + 16}"/><line x1="${x + 6}" y1="${y - 16}" x2="${x + 6}" y2="${y + 16}"/><line x1="${x + 6}" y1="${y}" x2="${x + 30}" y2="${y}"/><text x="${x - 8}" y="${y - 22}">${lab}</text>`;
+  const batt = (x, y1, y2) => { const m = (y1 + y2) / 2; return `<line x1="${x}" y1="${y1}" x2="${x}" y2="${m - 6}"/><line x1="${x - 14}" y1="${m - 6}" x2="${x + 14}" y2="${m - 6}"/><line x1="${x - 7}" y1="${m + 4}" x2="${x + 7}" y2="${m + 4}"/><line x1="${x}" y1="${m + 4}" x2="${x}" y2="${y2}"/><text x="${x + 18}" y="${m - 2}">U</text>`; };
+  function svg() {
+    const L = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+    let s = '<svg class="sch" viewBox="0 -12 300 165">';
+    if (S.mode === 'par') {
+      s += L(30, 25, 190, 25) + L(30, 125, 190, 125) + batt(30, 25, 125);
+      [[110, 'C₁'], [190, 'C₂']].forEach(([x, t]) => { s += L(x, 25, x, 45) + cap(x, 75, true, t) + L(x, 105, x, 125); });
+    } else if (S.mode === 'ser') {
+      s += L(30, 30, 70, 30) + cap(100, 30, false, 'C₁') + L(106, 30, 160, 30) + cap(190, 30, false, 'C₂') + L(196, 30, 260, 30) + L(260, 30, 260, 120) + L(30, 120, 260, 120) + batt(30, 30, 120);
+    } else {
+      [[20, 100], [160, 240]].forEach(([bx, cx], i) => {
+        s += L(bx, 30, cx, 30) + L(bx, 120, cx, 120) + batt(bx, 30, 120) + L(cx, 30, cx, 45) + cap(cx, 75, true, i ? 'C₂' : 'C₁') + L(cx, 105, cx, 120);
+      });
+    }
+    return s + '</svg>';
+  }
+  const u = v => fmt(v * 1e6) + ' µC';
+  function draw() {
+    const C1 = S.C1 * 1e-6, C2 = S.C2 * 1e-6, U = S.U;
+    $('#svgc', root).innerHTML = svg();
+    let Cg, Q1, Q2, U1, U2, steps, rule;
+    if (S.mode === 'one') {
+      Q1 = C1 * U; Q2 = C2 * U; U1 = U2 = U; Cg = null;
+      steps = `<ol><li>Jeder Kondensator hängt allein an der Quelle: <b>U₁ = U₂ = ${U} V</b>.</li>
+        <li>Q₁ = C₁ · U = ${fmt(S.C1)} µF · ${U} V = <b>${u(Q1)}</b></li>
+        <li>Q₂ = C₂ · U = ${fmt(S.C2)} µF · ${U} V = <b>${u(Q2)}</b></li></ol>`;
+      rule = 'Allein an der Quelle gilt für jeden Kondensator <b>Q = C · U</b>. Die größere Kapazität speichert bei gleicher Spannung mehr Ladung.';
+    } else if (S.mode === 'ser') {
+      Cg = C1 * C2 / (C1 + C2); const Q = Cg * U; Q1 = Q2 = Q; U1 = Q / C1; U2 = Q / C2;
+      const inv = 1 / S.C1 + 1 / S.C2;
+      steps = `<ol><li>Kehrwerte addieren: ${fr('1', 'C<sub>ges</sub>')} = ${fr('1', 'C₁')} + ${fr('1', 'C₂')} = ${fr('1', fmt(S.C1) + ' µF')} + ${fr('1', fmt(S.C2) + ' µF')} = ${fmt(inv, 4)} 1/µF</li>
+        <li>C<sub>ges</sub> = 1 / ${fmt(inv, 4)} µF⁻¹ = <b>${fmt(Cg * 1e6)} µF</b> (kleiner als der kleinste Einzelwert)</li>
+        <li>Die Ladung ist überall gleich: Q = C<sub>ges</sub> · U = ${fmt(Cg * 1e6)} µF · ${U} V = <b>${u(Q)}</b></li>
+        <li>U₁ = Q / C₁ = ${u(Q)} / ${fmt(S.C1)} µF = <b>${fmt(U1)} V</b></li>
+        <li>U₂ = U − U₁ = ${U} V − ${fmt(U1)} V = <b>${fmt(U - U1)} V</b> (Kontrolle: Q/C₂ = ${fmt(U2)} V)</li></ol>`;
+      rule = 'Reihe: <b>gleiche Ladung</b> auf beiden, die <b>Spannung teilt sich</b> (U = U₁ + U₂). Der kleinere Kondensator bekommt die größere Spannung.';
+    } else {
+      Cg = C1 + C2; Q1 = C1 * U; Q2 = C2 * U; U1 = U2 = U;
+      steps = `<ol><li>Kapazitäten addieren: C<sub>ges</sub> = C₁ + C₂ = ${fmt(S.C1)} µF + ${fmt(S.C2)} µF = <b>${fmt(S.C1 + S.C2)} µF</b></li>
+        <li>Beide liegen an U = ${U} V.</li>
+        <li>Q₁ = C₁ · U = <b>${u(Q1)}</b>, Q₂ = C₂ · U = <b>${u(Q2)}</b></li>
+        <li>Q<sub>ges</sub> = Q₁ + Q₂ = <b>${u(Q1 + Q2)}</b> (Kontrolle: C<sub>ges</sub> · U = ${u(Cg * U)})</li></ol>`;
+      rule = 'Parallel: <b>gleiche Spannung</b> an beiden, die <b>Ladungen addieren</b> sich, genauso die Kapazitäten.';
+    }
+    const T = [];
+    if (Cg !== null) T.push(['Gesamtkapazität C<sub>ges</sub>', fmt(Cg * 1e6) + ' µF']);
+    T.push(['C₁: Spannung U₁', fmt(U1) + ' V'], ['C₂: Spannung U₂', fmt(U2) + ' V'], ['C₁: Ladung Q₁', u(Q1)], ['C₂: Ladung Q₂', u(Q2)]);
+    if (S.mode !== 'one') T.push(['Gesamtladung Q<sub>ges</sub>', u(S.mode === 'ser' ? Q1 : Q1 + Q2)]);
+    $('#tiles', root).innerHTML = T.map(t => `<div class="tile"><div class="k">${t[0]}</div><div class="v">${t[1]}</div></div>`).join('');
+    let bars = '';
+    if (S.mode === 'ser') bars = `<div class="card"><b>Spannungsverteilung</b><div class="bar"><span style="width:${U1 / U * 100}%;background:#0d9488">U₁ ${fmt(U1)} V</span><span style="width:${U2 / U * 100}%;background:#d97706">U₂ ${fmt(U2)} V</span></div><small class="hint">Zusammen ergibt sich die Quellenspannung ${U} V.</small></div>`;
+    else { const mx = Math.max(Q1, Q2); bars = `<div class="card"><b>Ladungen im Vergleich</b><div class="bar"><span style="width:${Q1 / mx * 100}%;background:#0d9488">Q₁ ${u(Q1)}</span></div><div class="bar"><span style="width:${Q2 / mx * 100}%;background:#d97706">Q₂ ${u(Q2)}</span></div></div>`; }
+    $('#bars', root).innerHTML = bars;
+    $('#steps', root).innerHTML = steps;
+    $('#rule', root).innerHTML = `<div class="tip">${rule}</div>`;
+  }
+  $('#fc', root).innerHTML = [
+    fcard({
+      name: 'Reihenschaltung', f: fr('1', 'C<sub>ges</sub>') + ' = ' + fr('1', 'C₁') + ' + ' + fr('1', 'C₂'), open: true,
+      syms: [['C<sub>ges</sub>', 'Ersatzkapazität der ganzen Schaltung', 'F'], ['Q', 'auf allen Kondensatoren gleich', 'C'], ['U₁, U₂', 'Teilspannungen, Summe = U', 'V']],
+      expl: 'Die Ladung muss „durch“ beide Kondensatoren, daher ist Q überall gleich. Weil U₁ = Q/C₁ und U₂ = Q/C₂ ist, teilt sich die Spannung umgekehrt zu den Kapazitäten auf.',
+      tip: 'Merkregel: Reihe → Kehrwerte addieren → Ergebnis ist kleiner als der kleinste Wert.',
+      ex: 'Zwei Kondensatoren 4 µF und 10 µF: 1/C = 1/4 + 1/10 = 7/20 → C<sub>ges</sub> = 20/7 µF ≈ 2,86 µF'
+    }),
+    fcard({
+      name: 'Parallelschaltung', f: 'C<sub>ges</sub> = C₁ + C₂',
+      expl: 'Parallel vergrößert sich einfach die Plattenfläche (C ~ A). Beide Kondensatoren liegen an der vollen Spannung U.',
+      ex: '4 µF + 10 µF = 14 µF, Q<sub>ges</sub> = 14 µF · 12 V = 168 µC'
+    }),
+    fcard({ name: 'Ladung bestimmen', f: 'Q = C · U', expl: 'Gilt für jeden einzelnen Kondensator und auch für die Ersatzkapazität der Schaltung.' })
+  ].join('');
+  quiz($('#qz', root), quizFor('circ'));
+  draw();
+  return { resize: draw };
+}
+
+</script>
+<script>
+'use strict';
+/* Modul 4: Arbeitsdiagramm (Q-U-Diagramm) */
+function modWork(root) {
+  const S = { mode: 'a', q: 5, U: 8, C: 4 };
+  root.innerHTML = `
+  <p class="lead">Im Arbeitsdiagramm trägst du die Ladung über der Spannung auf. Die <b>Fläche</b> darunter ist die Arbeit bzw. Energie, die <b>Steigung</b> ist die Kapazität.</p>
+  <div class="seg" id="cm">
+    <button data-m="a" class="on">Ladung q durch Spannung U<small>W = q · U (Rechteck)</small></button>
+    <button data-m="b">Kondensator aufladen<small>Q = C · U (Gerade, Dreieck)</small></button>
+  </div>
+  <div class="cv" id="cv"></div>
+  <div class="card" id="sl"></div>
+  <div class="out" id="ro"></div>
+  <h2>Formeln erklärt</h2><div id="fc"></div>
+  <h2>Quiz</h2><div id="qz"></div>`;
+  const cv = mkCanvas($('#cv', root), .75);
+  const box = $('#sl', root);
+  const sq = slider(box, { label: 'Ladung q', min: 1, max: 10, step: .5, val: S.q, f: v => fmt(v) + ' µC' }, v => { S.q = v; draw(); });
+  const sC = slider(box, { label: 'Kapazität C', min: 1, max: 10, step: .5, val: S.C, f: v => fmt(v) + ' µF' }, v => { S.C = v; draw(); });
+  const sU = slider(box, { label: 'Spannung U', min: 1, max: 12, step: .5, val: S.U, f: v => fmt(v) + ' V' }, v => { S.U = v; draw(); });
+  $('#cm', root).addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    S.mode = b.dataset.m;
+    $('#cm', root).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    draw();
+  });
+  function draw() {
+    cv.fit();
+    const { ctx, W, H } = cv;
+    const a = S.mode === 'a';
+    sq.el.style.display = a ? '' : 'none'; sC.el.style.display = a ? 'none' : '';
+    const Umax = 12, qmax = a ? 10 : 100;
+    const fm = frame(ctx, W, H, { xmax: Umax, ymax: qmax, nx: 6, ny: 5, xf: v => fmt(v) + ' V', yf: v => fmt(v) + ' µC', xlab: 'U', ylab: a ? 'q' : 'Q' });
+    const { X, Y } = fm;
+    ctx.lineWidth = 2;
+    if (a) {
+      ctx.fillStyle = col('--acc'); ctx.globalAlpha = .25; ctx.fillRect(X(0), Y(S.q), X(S.U) - X(0), Y(0) - Y(S.q)); ctx.globalAlpha = 1;
+      ctx.strokeStyle = col('--acc'); ctx.strokeRect(X(0), Y(S.q), X(S.U) - X(0), Y(0) - Y(S.q));
+      ctx.fillStyle = col('--ink'); ctx.font = 'bold 15px system-ui'; ctx.textAlign = 'center';
+      ctx.fillText('W = q · U', (X(0) + X(S.U)) / 2, (Y(0) + Y(S.q)) / 2 + 5);
+      $('#ro', root).innerHTML = `Arbeit = Fläche des Rechtecks: <b>W = ${fmt(S.q)} µC · ${fmt(S.U)} V = ${fmt(S.q * S.U)} µJ</b><br><small class="hint">Eine Ladung q wird durch die Spannung U bewegt (U ändert sich dabei nicht). Doppelte Ladung oder doppelte Spannung → doppelte Arbeit.</small>`;
+    } else {
+      const Q = S.C * S.U;
+      ctx.fillStyle = col('--fld'); ctx.globalAlpha = .28; ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(S.U), Y(0)); ctx.lineTo(X(S.U), Y(Q)); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = col('--fld'); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(Umax), Y(S.C * Umax)); ctx.stroke();
+      ctx.strokeStyle = col('--mut'); ctx.lineWidth = 1.2; ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(X(S.U), Y(0)); ctx.lineTo(X(S.U), Y(Q)); ctx.lineTo(X(0), Y(Q)); ctx.stroke(); ctx.setLineDash([]);
+      /* Steigungsdreieck */
+      const u0 = Math.max(0, S.U - 4), q0 = S.C * u0;
+      ctx.strokeStyle = col('--pos'); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(u0), Y(q0)); ctx.lineTo(X(S.U), Y(q0)); ctx.lineTo(X(S.U), Y(Q)); ctx.stroke();
+      ctx.fillStyle = col('--pos'); ctx.font = 'bold 12px system-ui'; ctx.textAlign = 'center';
+      ctx.fillText('ΔU', (X(u0) + X(S.U)) / 2, Y(q0) + 14); ctx.textAlign = 'left'; ctx.fillText('ΔQ', X(S.U) + 4, (Y(q0) + Y(Q)) / 2);
+      ctx.fillStyle = col('--ink'); ctx.font = 'bold 13px system-ui'; ctx.textAlign = 'center';
+      ctx.fillText('W', X(S.U * .45), Y(Q * .14));
+      $('#ro', root).innerHTML = `Steigung = ΔQ/ΔU = <b>${fmt(S.C)} µC/V = ${fmt(S.C)} µF = C</b> (Q = C · U)<br>Bei U = ${fmt(S.U)} V: Q = ${fmt(Q)} µC. Energie = Dreiecksfläche: <b>W = ½ · Q · U = ${fmt(.5 * Q * S.U)} µJ</b><br><small class="hint">Beim Aufladen steigt U von 0 auf ${fmt(S.U)} V. Im Mittel ist nur die halbe Spannung wirksam, deshalb ½.</small>`;
+    }
+  }
+  $('#fc', root).innerHTML = [
+    fcard({
+      name: 'Arbeit im elektrischen Feld', f: 'W = q · U', open: true,
+      syms: [['W', 'Arbeit bzw. Energie', 'J (Joule)'], ['q', 'bewegte Ladung', 'C (Coulomb)'], ['U', 'durchlaufene Spannung', 'V']],
+      expl: 'Arbeit = Ladung mal Spannung. Im Arbeitsdiagramm ist das die <b>Fläche</b> unter dem Graphen (hier ein Rechteck mit den Seiten q und U).',
+      ex: 'Rechteck bis 8 V: z. B. q = 5 µC → W = 5 µC · 8 V = 40 µJ',
+      tip: '1 V · 1 C = 1 J. Ein Elektron durch 1 V hat die Energie 1 eV = 1,6·10⁻¹⁹ J.'
+    }),
+    fcard({
+      name: 'Steigung = Kapazität', f: fr('ΔQ', 'ΔU') + ' = m = tan(α) = C',
+      syms: [['ΔQ', 'Änderung der Ladung', 'C'], ['ΔU', 'Änderung der Spannung', 'V'], ['m', 'Steigung der Geraden im Q-U-Diagramm', 'C/V = F'], ['C', 'Kapazität', 'F']],
+      expl: 'Die Gerade Q = C · U läuft durch den Nullpunkt. Je steiler sie ist, desto mehr Ladung nimmt der Kondensator pro Volt auf, also desto größer ist C. Steigung ≙ Kapazität.',
+      tip: 'Steigung bestimmen: Steigungsdreieck zeichnen, ΔQ durch ΔU teilen.'
+    }),
+    fcard({
+      name: 'Energie des Kondensators (Ergänzung)', f: 'W = ½ · Q · U = ½ · C · U²',
+      expl: 'Beim Aufladen ist die Fläche unter der Geraden ein <b>Dreieck</b>: ½ · Grundseite (U) · Höhe (Q). Setzt du Q = C · U ein, erhältst du ½ · C · U².'
+    })
+  ].join('');
+  quiz($('#qz', root), quizFor('work'));
+  draw();
+  return { resize: draw };
+}
+
+</script>
+<script>
+'use strict';
+/* Modul 5: RC-Kreis, Laden und Entladen */
+function modRC(root) {
+  const S = { R: 100, C: 470, U0: 8, mode: 'dis', t: 1, play: false };
+  let raf = 0, last = 0;
+  root.innerHTML = `
+  <p class="lead">Ein Kondensator wird über einen Widerstand geladen oder entladen. Das passiert nicht sofort, sondern nach einer e-Funktion. Startwerte aus deinem Versuch: 470 µF, 100 Ω, 8 V.</p>
+  <div class="seg" id="cm">
+    <button data-m="chg">Laden<small>Ladekreis</small></button>
+    <button data-m="dis" class="on">Entladen<small>Entladekreis</small></button>
+  </div>
+  <div class="cv" id="cv"></div>
+  <div class="card" id="sl"></div>
+  <div class="row"><button class="btn primary" id="play">▶ Abspielen</button></div>
+  <div class="tiles" id="tiles"></div>
+  <div class="card"><b>Zeitkonstante τ in Schritten</b><div id="tab"></div></div>
+  <div class="tip warn">⚠ Einheit beachten: 470 µF = 470·10⁻⁶ F. (470 mF wären 1000-mal mehr und τ = 47 s.)</div>
+  <h2>Formeln erklärt</h2><div id="fc"></div>
+  <h2>Quiz</h2><div id="qz"></div>`;
+  const cv = mkCanvas($('#cv', root), .7);
+  const box = $('#sl', root);
+  const tau = () => S.R * S.C * 1e-6;
+  const sR = slider(box, { label: 'Widerstand R', log: true, min: 10, max: 1000, val: S.R, f: v => v + ' Ω' }, v => { S.R = v; draw(); });
+  const sC = slider(box, { label: 'Kapazität C', log: true, min: 10, max: 1000, val: S.C, f: v => v + ' µF' }, v => { S.C = v; draw(); });
+  const sU = slider(box, { label: 'Quellenspannung U₀', min: 1, max: 12, step: 1, val: S.U0, f: v => v + ' V' }, v => { S.U0 = v; draw(); });
+  const sT = slider(box, { label: 'Zeit t (in Vielfachen von τ)', min: 0, max: 6, step: .05, val: S.t, f: v => fmt(v, 2) + ' τ' }, v => { S.t = v; stop(); draw(); });
+  const Uc = x => S.mode === 'dis' ? S.U0 * Math.exp(-x) : S.U0 * (1 - Math.exp(-x));
+  $('#cm', root).addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    S.mode = b.dataset.m;
+    $('#cm', root).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    draw();
+  });
+  function stop() { S.play = false; cancelAnimationFrame(raf); $('#play', root).textContent = '▶ Abspielen'; }
+  $('#play', root).addEventListener('click', () => {
+    if (S.play) { stop(); return; }
+    S.play = true; if (S.t >= 5.95) S.t = 0; last = 0;
+    $('#play', root).textContent = '⏸ Pause';
+    const step = ts => {
+      if (!S.play) return;
+      if (last) S.t += (ts - last) / 1000 * 1.2;
+      last = ts;
+      if (S.t >= 6) { S.t = 6; sT.set(S.t); draw(); stop(); return; }
+      sT.set(S.t); draw(); raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  });
+  function draw() {
+    cv.fit();
+    const { ctx, W, H } = cv;
+    const T = tau(), U0 = S.U0;
+    const tx = v => { const t = v * T; return si(t, 's', 2); };
+    const fm = frame(ctx, W, H, { xmax: 6, ymax: U0, nx: 6, ny: 4, xf: v => v === 0 ? '0' : tx(v), yf: v => fmt(v) + ' V', xlab: 't', ylab: 'U_C' });
+    const { X, Y } = fm;
+    /* Markierungen */
+    ctx.setLineDash([5, 4]); ctx.lineWidth = 1.2;
+    const lvl = S.mode === 'dis' ? U0 * Math.exp(-1) : U0 * (1 - Math.exp(-1));
+    ctx.strokeStyle = col('--fld'); ctx.beginPath(); ctx.moveTo(X(0), Y(lvl)); ctx.lineTo(X(1), Y(lvl)); ctx.lineTo(X(1), Y(0)); ctx.stroke();
+    ctx.strokeStyle = col('--pos'); ctx.beginPath(); ctx.moveTo(X(5), Y(0)); ctx.lineTo(X(5), Y(U0 * .55)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = col('--fld'); ctx.font = '11px system-ui'; ctx.textAlign = 'left';
+    ctx.fillText(S.mode === 'dis' ? '37 % bei τ' : '63 % bei τ', X(1) + 8, S.mode === 'dis' ? Y(lvl) - 6 : Y(lvl) + 16);
+    ctx.fillStyle = col('--pos'); ctx.textAlign = 'right'; ctx.fillText('5τ: technisch ' + (S.mode === 'dis' ? 'entladen' : 'voll'), X(5) - 4, Y(U0 * .5));
+    /* Kurve */
+    ctx.strokeStyle = col('--acc'); ctx.lineWidth = 3; ctx.beginPath();
+    for (let i = 0; i <= 240; i++) { const x = 6 * i / 240; const px = X(x), py = Y(Uc(x)); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
+    ctx.stroke();
+    ctx.fillStyle = col('--acc'); ctx.beginPath(); ctx.arc(X(S.t), Y(Uc(S.t)), 6, 0, 7); ctx.fill();
+    const u = Uc(S.t);
+    $('#tiles', root).innerHTML = [
+      ['Zeitkonstante τ = R · C', si(T, 's')],
+      ['Zeit t', si(S.t * T, 's')],
+      ['Spannung U<sub>C</sub>(t)', fmt(u, 3) + ' V'],
+      [S.mode === 'dis' ? 'Noch übrig' : 'Schon geladen', fmt(u / U0 * 100, 3) + ' %']
+    ].map(t => `<div class="tile"><div class="k">${t[0]}</div><div class="v">${t[1]}</div></div>`).join('');
+    let rows = '<table class="sym">';
+    for (let k = 1; k <= 5; k++) rows += `<tr><td style="font-style:normal">${k} τ = ${si(k * T, 's', 3)}</td><td style="text-align:left;color:inherit;font-style:normal">${fmt(Uc(k), 3)} V</td><td>${fmt(Uc(k) / U0 * 100, 3)} %</td></tr>`;
+    $('#tab', root).innerHTML = rows + '</table>';
+  }
+  $('#fc', root).innerHTML = [
+    fcard({
+      name: 'Zeitkonstante', f: 'τ = R · C', open: true,
+      syms: [['τ', 'Tau: Maß dafür, wie schnell geladen/entladen wird', 's'], ['R', 'Widerstand im Kreis', 'Ω'], ['C', 'Kapazität', 'F']],
+      expl: 'Großer Widerstand bremst den Strom, große Kapazität braucht viel Ladung. Beides macht τ größer und den Vorgang langsamer.',
+      ex: 'τ = 100 Ω · 470·10⁻⁶ F = 0,047 s',
+      tip: 'Nach <b>1 τ</b> hat sich die Spannung beim Entladen auf ca. 37 % verkleinert (63 % „verloren“). Beim Laden ist sie auf 63 % gestiegen.'
+    }),
+    fcard({
+      name: 'Entladen', f: 'U<sub>C</sub>(t) = U<sub>0</sub> · e<sup>−t/τ</sup> = U<sub>0</sub> · e<sup>−t/(R·C)</sup>',
+      syms: [['U<sub>C</sub>(t)', 'Kondensatorspannung zur Zeit t', 'V'], ['U<sub>0</sub>', 'Spannung am Anfang', 'V'], ['e', 'Eulersche Zahl ≈ 2,718', ''], ['t', 'vergangene Zeit', 's']],
+      expl: 'Die Spannung fällt anfangs schnell, später immer langsamer (exponentiell). Sie erreicht rechnerisch nie ganz null.',
+      ex: 'Für t = τ: e<sup>−1</sup> = 0,368 → 0,368 · 8 V = <b>2,94 V</b>'
+    }),
+    fcard({
+      name: 'Laden', f: 'U<sub>C</sub>(t) = U<sub>0</sub> · (1 − e<sup>−t/τ</sup>)',
+      expl: 'Genau das Spiegelbild: Anfangs wächst die Spannung schnell, dann nähert sie sich U₀.',
+      ex: 'Für t = τ: 1 − e<sup>−1</sup> = <b>0,632</b> → 63,2 % von U₀'
+    }),
+    fcard({
+      name: '5-τ-Regel', f: 't ≈ 5 · τ',
+      expl: 'Nach 5 τ sind es nur noch 0,7 % der Anfangsspannung. Das nennt man „technisch entladen“ (bzw. voll geladen).',
+      ex: 't<sub>5</sub> = 5 · 0,047 s = <b>0,235 s</b>'
+    })
+  ].join('');
+  quiz($('#qz', root), quizFor('rc'));
+  draw();
+  return { resize: draw, stop };
+}
+
+</script>
+<script>
+'use strict';
+/* Modul 6: Millikan-Versuch (Schwebe-Methode) */
+function modMill(root) {
+  const RHO = 886, ETA = 1.81e-5;
+  const S = { r: 1, n: 3, U: 300, d: 5, p: .5 };
+  let raf = 0, last = 0;
+  root.innerHTML = `
+  <p class="lead">Millikan hat die Elementarladung gemessen: Ein geladenes Öltröpfchen schwebt im Feld eines Plattenkondensators, wenn die elektrische Kraft genauso groß ist wie die Gewichtskraft. Stelle die Spannung so ein, dass das Tröpfchen steht.</p>
+  <div class="cv" id="cv"></div>
+  <div class="card" id="sl"></div>
+  <div class="row"><button class="btn primary" id="fl">Auf Schwebespannung stellen</button><button class="btn" id="nw">Neues Tröpfchen</button></div>
+  <div class="tiles" id="tiles"></div>
+  <div class="out" id="ro"></div>
+  <h2>Formeln erklärt</h2><div id="fc"></div>
+  <h2>Quiz</h2><div id="qz"></div>
+  <div class="tip">Hinweis: Dieses Modul ist eine Ergänzung zu deinem Thema „Millikan-Versuch“ (Hausaufgabe). Es beruht auf der Standardphysik des Versuchs, nicht auf deinen Notizen.</div>`;
+  const cv = mkCanvas($('#cv', root), .8);
+  const box = $('#sl', root);
+  const sU = slider(box, { label: 'Spannung U', min: 0, max: 1500, step: 1, val: S.U, f: v => v + ' V' }, v => { S.U = v; draw(); });
+  const sn = slider(box, { label: 'Überschussladungen n (q = n·e)', min: 1, max: 10, step: 1, val: S.n, f: v => v + ' e' }, v => { S.n = v; draw(); });
+  const sr = slider(box, { label: 'Tröpfchenradius r', min: .5, max: 2, step: .05, val: S.r, f: v => fmt(v) + ' µm' }, v => { S.r = v; draw(); });
+  const sd = slider(box, { label: 'Plattenabstand d', min: 3, max: 10, step: .5, val: S.d, f: v => fmt(v) + ' mm' }, v => { S.d = v; draw(); });
+  const phys = () => {
+    const r = S.r * 1e-6, m = RHO * 4 / 3 * Math.PI * r ** 3, Fg = m * G, d = S.d / 1000;
+    const E = S.U / d, Fel = S.n * QE * E, Uf = m * G * d / (S.n * QE);
+    const v = (Fg - Fel) / (6 * Math.PI * ETA * r);   // m/s, positiv = fällt
+    return { r, m, Fg, d, E, Fel, Uf, v };
+  };
+  $('#fl', root).addEventListener('click', () => { const p = phys(); S.U = clamp(Math.round(p.Uf), 0, 1500); sU.set(S.U); S.p = .5; draw(); });
+  $('#nw', root).addEventListener('click', () => { S.p = .5; draw(); });
+  function loop(ts) {
+    if (last) { const dt = Math.min(.05, (ts - last) / 1000); const p = phys(); S.p = clamp(S.p + p.v / p.d * 40 * dt, .04, .96); }
+    last = ts; draw(true); raf = requestAnimationFrame(loop);
+  }
+  function draw(fromLoop) {
+    const p = phys();
+    cv.fit();
+    const { ctx, W, H } = cv;
+    const x0 = W * .2, x1 = W * .8, yT = H * .14, yB = H * .86;
+    ctx.fillStyle = col('--pos'); ctx.fillRect(x0, yT - 8, x1 - x0, 8);
+    ctx.fillStyle = col('--neg'); ctx.fillRect(x0, yB, x1 - x0, 8);
+    ctx.font = 'bold 14px system-ui'; ctx.textAlign = 'center';
+    for (let i = 0; i < 9; i++) { const x = x0 + (x1 - x0) * (i + .5) / 9; ctx.fillStyle = col('--pos'); ctx.fillText('+', x, yT + 14); ctx.fillStyle = col('--neg'); ctx.fillText('−', x, yB - 4); }
+    const nl = clamp(Math.round(p.E / 3e5 * 6), 0, 14);
+    ctx.strokeStyle = col('--fld'); ctx.fillStyle = col('--fld'); ctx.lineWidth = 1.3;
+    for (let i = 0; i < nl; i++) { const x = x0 + (x1 - x0) * (i + .5) / nl; ctx.beginPath(); ctx.moveTo(x, yT + 22); ctx.lineTo(x, yB - 16); ctx.stroke(); arrowHead(ctx, x, yB - 15, Math.PI / 2, 5); }
+    const dy = yT + (yB - yT) * S.p, dx = W / 2, R = 8 + (S.r - .5) * 5;
+    ctx.fillStyle = col('--ink'); ctx.beginPath(); ctx.arc(dx, dy, R, 0, 7); ctx.fill();
+    const sc = 46 / Math.max(p.Fg, p.Fel, 1e-30);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = col('--bad'); ctx.fillStyle = col('--bad'); ctx.beginPath(); ctx.moveTo(dx + R + 8, dy); ctx.lineTo(dx + R + 8, dy + p.Fg * sc); ctx.stroke(); arrowHead(ctx, dx + R + 8, dy + p.Fg * sc + 2, Math.PI / 2, 7);
+    ctx.strokeStyle = col('--ok'); ctx.fillStyle = col('--ok'); ctx.beginPath(); ctx.moveTo(dx - R - 8, dy); ctx.lineTo(dx - R - 8, dy - p.Fel * sc); ctx.stroke(); arrowHead(ctx, dx - R - 8, dy - p.Fel * sc - 2, -Math.PI / 2, 7);
+    ctx.font = '12px system-ui'; ctx.textAlign = 'left'; ctx.fillStyle = col('--bad'); ctx.fillText('F_G', dx + R + 14, dy + 14);
+    ctx.textAlign = 'right'; ctx.fillStyle = col('--ok'); ctx.fillText('F_el', dx - R - 14, dy - 8);
+    ctx.fillStyle = col('--mut'); ctx.textAlign = 'left'; ctx.fillText('d = ' + fmt(S.d) + ' mm', x1 + 6 > W - 62 ? W - 62 : x1 + 6, H / 2);
+    const diff = (p.Fel - p.Fg) / p.Fg;
+    const state = Math.abs(diff) < .01 ? '<b style="color:var(--ok)">Schwebezustand!</b> F_el = F_G' : diff > 0 ? 'Elektrische Kraft überwiegt → Tröpfchen steigt' : 'Gewichtskraft überwiegt → Tröpfchen sinkt';
+    $('#ro', root).innerHTML = `${state}<br><small class="hint">Schwebespannung für dieses Tröpfchen: <b>${fmt(p.Uf, 4)} V</b> · Bewegung im Zeitraffer (×40, mit Stokes-Reibung).</small>`;
+    if (!fromLoop || !draw.t || performance.now() - draw.t > 120) {
+      draw.t = performance.now();
+      $('#tiles', root).innerHTML = [['Masse m', si(p.m * 1000, 'g')], ['Gewichtskraft F_G = m·g', si(p.Fg, 'N')], ['Feldstärke E = U/d', si(p.E, 'V/m')], ['Elektrische Kraft F_el = n·e·E', si(p.Fel, 'N')]]
+        .map(t => `<div class="tile"><div class="k">${t[0]}</div><div class="v">${t[1]}</div></div>`).join('');
+    }
+  }
+  $('#fc', root).innerHTML = [
+    fcard({
+      name: 'Schwebebedingung', f: 'F<sub>el</sub> = F<sub>G</sub> &nbsp;⇒&nbsp; q · ' + fr('U', 'd') + ' = m · g', open: true,
+      syms: [['q', 'Ladung des Tröpfchens (n · e)', 'C'], ['U', 'Spannung zwischen den Platten', 'V'], ['d', 'Plattenabstand', 'm'], ['m', 'Masse des Tröpfchens', 'kg'], ['g', 'Fallbeschleunigung 9,81', 'm/s²']],
+      expl: 'Nach oben zieht die elektrische Kraft F = q·E, nach unten die Gewichtskraft m·g. Beim Schweben sind beide gleich groß, das Tröpfchen ruht.',
+      tip: 'Das Tröpfchen muss negativ geladen sein, wenn die obere Platte positiv ist, sonst wird es nach unten gedrückt.'
+    }),
+    fcard({
+      name: 'Ladung berechnen', f: 'q = ' + fr('m · g · d', 'U') + ' = n · e',
+      syms: [['e', 'Elementarladung = 1,602·10⁻¹⁹', 'C'], ['n', 'ganze Zahl (Anzahl Elementarladungen)', '']],
+      expl: 'Millikan fand: Jede gemessene Ladung ist ein <b>ganzzahliges Vielfaches</b> von e. Daher gibt es eine kleinste Ladungsportion, die Elementarladung.'
+    }),
+    fcard({
+      name: 'Masse des Öltröpfchens', f: 'm = ρ · V = ρ · ' + fr('4', '3') + ' · π · r³',
+      syms: [['ρ', 'Dichte des Öls (hier 886)', 'kg/m³'], ['r', 'Radius des Tröpfchens (≈ 1 µm)', 'm']],
+      expl: 'Das Tröpfchen ist kugelförmig, also wird zuerst das Kugelvolumen berechnet und dann mit der Dichte multipliziert.'
+    })
+  ].join('');
+  quiz($('#qz', root), quizFor('mill'));
+  draw();
+  raf = requestAnimationFrame(loop);
+  return { resize: () => draw(), stop() { cancelAnimationFrame(raf); } };
+}
+
+</script>
+<script>
+'use strict';
+/* Quizfragen, Aufgabenblatt und Zufallsaufgaben */
+const QUIZ = [
+  { id: 'f1', t: 'field', q: 'Wo beginnen elektrische Feldlinien?', o: ['Auf negativen Ladungen', 'Auf positiven Ladungen', 'Sie haben keinen Anfang'], a: 1, why: 'Feldlinien zeigen die Kraft auf eine positive Probeladung. Sie laufen von + nach −.' },
+  { id: 'f2', t: 'field', q: 'Wie treffen Feldlinien auf eine leitende Oberfläche?', o: ['Parallel zur Oberfläche', 'Senkrecht (⊥) zur Oberfläche', 'Unter 45°'], a: 1, why: 'Wäre eine Feldkomponente entlang der Oberfläche vorhanden, würden sich die Ladungen im Leiter verschieben, bis sie verschwindet.' },
+  { id: 'f3', t: 'field', q: 'Die Feldlinien liegen an einer Stelle sehr eng beieinander. Was heißt das?', o: ['Das Feld ist dort besonders stark', 'Das Feld ist dort schwach', 'Dort sitzt keine Ladung'], a: 0, why: 'Je enger die Linien, desto höher die Feldstärke.' },
+  { id: 'f4', t: 'field', q: 'Wann nennt man ein Feld homogen?', o: ['Wenn die Feldlinien parallel mit gleichem Abstand verlaufen', 'Wenn die Linien von einem Punkt ausgehen', 'Wenn keine Ladung beteiligt ist'], a: 0, why: 'Dann hat E überall denselben Betrag und dieselbe Richtung, z. B. im Inneren eines Plattenkondensators.' },
+  { id: 'f5', t: 'field', q: 'Wie liegen Äquipotentialflächen zu den Feldlinien?', o: ['Parallel', 'Senkrecht', 'Beliebig'], a: 1, why: 'Auf der Fläche ist die Spannung gleich, senkrecht dazu (entlang der Feldlinie) ändert sie sich.' },
+  { id: 'c1', t: 'cap', q: 'Quelle angeschlossen (U konstant): Der Plattenabstand wird halbiert. Was passiert mit der Ladung Q?', o: ['Q verdoppelt sich', 'Q halbiert sich', 'Q bleibt gleich'], a: 0, why: 'C ~ 1/d, also verdoppelt sich C. Mit Q = C·U wächst Q auf das Doppelte.' },
+  { id: 'c2', t: 'cap', q: 'Der Kondensator ist abgeklemmt (Q konstant). Du verdoppelst den Plattenabstand. Was passiert mit U?', o: ['U halbiert sich', 'U verdoppelt sich', 'U bleibt gleich'], a: 1, why: 'C halbiert sich, Q bleibt: U = Q/C verdoppelt sich (U ~ d).' },
+  { id: 'c3', t: 'cap', q: 'Abgeklemmter Kondensator, Abstand wird verändert. Wie verhält sich die Feldstärke E = U/d?', o: ['Sie bleibt konstant', 'Sie verdoppelt sich', 'Sie halbiert sich'], a: 0, why: 'U und d ändern sich im gleichen Verhältnis, deshalb bleibt E gleich.' },
+  { id: 'c4', t: 'cap', q: 'Eine Glasscheibe (εr > 1) wird in den abgeklemmten Kondensator geschoben. Was passiert mit der Spannung?', o: ['Sie steigt', 'Sie sinkt', 'Sie bleibt gleich'], a: 1, why: 'C wird εr-mal größer, Q bleibt: U₂ = U₁/εr.' },
+  { id: 'c5', t: 'cap', q: 'Von welchen Größen hängt die Kapazität eines Plattenkondensators ab?', o: ['Nur von der Spannung', 'Von Fläche, Abstand und Dielektrikum', 'Nur von der Ladung'], a: 1, why: 'C = ε0·εr·A/d. Spannung und Ladung ändern C nicht.' },
+  { id: 's1', t: 'circ', q: 'Zwei Kondensatoren in Reihe. Was ist auf beiden gleich?', o: ['Die Spannung', 'Die Ladung', 'Die Kapazität'], a: 1, why: 'In einer Reihenschaltung fließt dieselbe Ladung auf beide, die Spannung teilt sich auf.' },
+  { id: 's2', t: 'circ', q: 'Zwei Kondensatoren parallel. Wie berechnet sich die Gesamtkapazität?', o: ['C₁ + C₂', '1/C₁ + 1/C₂', 'C₁ · C₂'], a: 0, why: 'Parallel addieren sich die Kapazitäten (Flächen addieren sich).' },
+  { id: 's3', t: 'circ', q: 'Die Gesamtkapazität einer Reihenschaltung ist …', o: ['größer als jede Einzelkapazität', 'kleiner als die kleinste Einzelkapazität', 'gleich der Summe'], a: 1, why: '1/C_ges = 1/C₁ + 1/C₂ ergibt immer ein kleineres C_ges.' },
+  { id: 'w1', t: 'work', q: 'Was bedeutet die Steigung der Geraden im Q-U-Diagramm?', o: ['Die Kapazität C', 'Die Energie W', 'Den Widerstand R'], a: 0, why: 'ΔQ/ΔU = C, denn Q = C·U.' },
+  { id: 'w2', t: 'work', q: 'Woran erkennst du im Arbeitsdiagramm die Arbeit?', o: ['An der Steigung', 'An der Fläche unter dem Graphen', 'Am Schnittpunkt mit der U-Achse'], a: 1, why: 'Die Fläche unter dem Graphen entspricht W (bei konstanter Spannung: W = q·U).' },
+  { id: 'w3', t: 'work', q: 'Beim Aufladen eines Kondensators auf U ist die Energie W = …', o: ['Q · U', '½ · Q · U', '2 · Q · U'], a: 1, why: 'Die Fläche unter der Geraden ist ein Dreieck: ½ · Q · U.' },
+  { id: 'r1', t: 'rc', q: 'Wie groß ist τ bei R = 100 Ω und C = 470 µF?', o: ['0,047 s', '0,47 s', '47 s'], a: 0, why: 'τ = 100 Ω · 470·10⁻⁶ F = 0,047 s.' },
+  { id: 'r2', t: 'rc', q: 'Wie viel % der Anfangsspannung sind beim Entladen nach 1 τ noch übrig?', o: ['63 %', '37 %', '5 %'], a: 1, why: 'e⁻¹ ≈ 0,368, also rund 37 %. Etwa 63 % sind „verloren“.' },
+  { id: 'r3', t: 'rc', q: 'Wann gilt ein Kondensator als technisch entladen?', o: ['Nach 1 τ', 'Nach 5 τ', 'Nie'], a: 1, why: 'Nach 5 τ sind es nur noch etwa 0,7 % der Anfangsspannung.' },
+  { id: 'r4', t: 'rc', q: 'Du verdoppelst den Widerstand R im RC-Kreis. Was passiert mit dem Entladevorgang?', o: ['Er dauert doppelt so lang', 'Er dauert halb so lang', 'Er bleibt gleich'], a: 0, why: 'τ = R·C wird doppelt so groß.' },
+  { id: 'm1', t: 'mill', q: 'Wann schwebt ein Öltröpfchen im Millikan-Versuch?', o: ['Wenn F_el = F_G', 'Wenn U = 0', 'Wenn F_el = 0'], a: 0, why: 'Beim Schweben heben sich elektrische Kraft nach oben und Gewichtskraft nach unten auf.' },
+  { id: 'm2', t: 'mill', q: 'Was fand Millikan über die Ladung der Tröpfchen?', o: ['Beliebige Werte', 'Immer ganzzahlige Vielfache von e', 'Immer genau e'], a: 1, why: 'Alle Ladungen waren n·e, damit ist e die kleinste Ladungsportion.' }
+];
+const quizFor = tag => QUIZ.filter(q => q.t === tag);
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+/* ---------- Aufgabenblatt (deine Aufgaben) ---------- */
+function sheetProblems() {
+  const A = Math.PI * .06 ** 2, C = E0 * A / .003, E = 2000 / .003;
+  const Cg = 1 / (1 / 4 + 1 / 10);
+  const Qs = Cg * 12, U1 = Qs / 4, U2 = 12 - U1;
+  return [
+    {
+      id: 'sh1a', title: '1a) Kapazität und Feldstärke', text: 'Plattenkondensator mit runden Platten, Durchmesser 12 cm, Plattenabstand 3 mm, angelegte Spannung U = 2 kV. Berechne die Kapazität und die Feldstärke.',
+      inputs: [{ label: 'Kapazität C', unit: 'pF', ans: C * 1e12 }, { label: 'Feldstärke E', unit: 'kV/m', ans: E / 1e3 }],
+      steps: [`Fläche: A = π · r² = π · (0,06 m)² = ${fmt(A, 4)} m²`, `C = ε<sub>0</sub> · A / d = 8,854·10⁻¹² F/m · ${fmt(A, 4)} m² / 0,003 m = ${fmt(C, 3)} F = <b>${fmt(C * 1e12, 3)} pF</b>`, `E = U / d = 2000 V / 0,003 m = ${fmt(E, 6)} V/m = <b>${fmt(E / 1e3, 4)} kV/m</b>`],
+      note: 'Kontrolliere die Einheiten in deinen Notizen: C = 3,34·10⁻¹¹ F = <b>33,4 pF</b> (nicht 3,34 pF). Bei E gilt 666 667 V/m = <b>667 kV/m</b>, achte auf den Faktor 1000.'
+    },
+    {
+      id: 'sh1b', title: '1b) Dielektrikum (Glasscheibe)', text: 'Die Spannungsquelle wird abgeklemmt und eine Glasscheibe zwischen die Platten geschoben. Die Spannung sinkt von 2 kV auf 1,6 kV. Berechne εr des Glases.',
+      inputs: [{ label: 'Relative Permittivität εr', unit: '', ans: 1.25 }],
+      steps: ['Abgeklemmt → die Ladung Q bleibt konstant: Q = C₁ · U₁ = C₂ · U₂', 'Mit Glas: C₂ = εr · C₁. Einsetzen: C₁ · U₁ = εr · C₁ · U₂. C₁ kürzt sich.', 'εr = U₁ / U₂ = 2000 V / 1600 V = <b>1,25</b>']
+    },
+    {
+      id: 'sh2a', title: '2a) Zwei Kondensatoren einzeln', text: 'C₁ = 4 µF und C₂ = 10 µF hängen einzeln an einer Gleichspannungsquelle mit 12 V. Bestimme die Ladung jedes Kondensators.',
+      inputs: [{ label: 'Q₁', unit: 'µC', ans: 48 }, { label: 'Q₂', unit: 'µC', ans: 120 }],
+      steps: ['Beide liegen an U = 12 V.', 'Q₁ = C₁ · U = 4 µF · 12 V = <b>48 µC</b>', 'Q₂ = C₂ · U = 10 µF · 12 V = <b>120 µC</b>']
+    },
+    {
+      id: 'sh2b', title: '2b) Reihenschaltung', text: 'C₁ = 4 µF und C₂ = 10 µF in Reihe an 12 V. Bestimme die Gesamtkapazität, die Ladung und die Spannungen U₁ und U₂.',
+      inputs: [{ label: 'C_ges', unit: 'µF', ans: Cg }, { label: 'Q', unit: 'µC', ans: Qs }, { label: 'U₁', unit: 'V', ans: U1 }, { label: 'U₂', unit: 'V', ans: U2 }],
+      steps: ['1/C_ges = 1/4 µF + 1/10 µF = 5/20 + 2/20 = 7/20 µF⁻¹ → C_ges = 20/7 µF = <b>2,857 µF</b>', `Q = C_ges · U = 2,857 µF · 12 V = <b>${fmt(Qs, 4)} µC</b> (= ${fmt(Qs / 10, 3)}·10⁻⁵ C)`, `U₁ = Q / C₁ = ${fmt(Qs, 4)} µC / 4 µF = <b>${fmt(U1, 4)} V</b>`, `U₂ = 12 V − U₁ = <b>${fmt(U2, 4)} V</b>`],
+      note: 'Vergleich mit deinen Notizen: Bei der Ladung steht 3,34·10⁻⁵ C, richtig ist <b>3,43·10⁻⁵ C</b> (Zahlendreher). Dein U₁ = 8,6 V und U₂ = 3,4 V passen dagegen zu diesem richtigen Wert.'
+    },
+    {
+      id: 'sh2c', title: '2c) Parallelschaltung', text: 'C₁ = 4 µF und C₂ = 10 µF parallel an 12 V. Bestimme die Gesamtkapazität und die Gesamtladung.',
+      inputs: [{ label: 'C_ges', unit: 'µF', ans: 14 }, { label: 'Q_ges', unit: 'µC', ans: 168 }],
+      steps: ['C_ges = C₁ + C₂ = 4 µF + 10 µF = <b>14 µF</b>', 'Q₁ = 4 µF · 12 V = 48 µC, Q₂ = 10 µF · 12 V = 120 µC', 'Q_ges = 48 µC + 120 µC = <b>168 µC</b> (oder C_ges · U = 14 µF · 12 V)'],
+      note: 'Vergleich mit deinen Notizen: Bei Q₂ steht in einer Zeile „4 µF · 12 V = 120 µC“. Richtig ist <b>10 µF · 12 V = 120 µC</b>.'
+    }
+  ];
+}
+
+/* ---------- Zufallsaufgaben ---------- */
+const GEN = [
+  () => {
+    const D = pick([6, 8, 10, 12, 15, 20]), d = pick([1, 2, 3, 4, 5]), U = pick([500, 1000, 2000, 3000, 5000]);
+    const A = Math.PI * (D / 200) ** 2, C = E0 * A / (d / 1000), E = U / (d / 1000);
+    return { title: 'Plattenkondensator', text: `Ein Plattenkondensator hat runde Platten mit Durchmesser ${D} cm und den Abstand ${d} mm. Die Spannung beträgt ${U} V (Luft). Berechne C und E.`, inputs: [{ label: 'C', unit: 'pF', ans: C * 1e12 }, { label: 'E', unit: 'kV/m', ans: E / 1e3 }], steps: [`A = π·(${D / 200} m)² = ${fmt(A, 4)} m²`, `C = ε<sub>0</sub>·A/d = ${fmt(C * 1e12, 4)} pF`, `E = U/d = ${U} V / ${d / 1000} m = ${fmt(E / 1e3, 4)} kV/m`] };
+  },
+  () => {
+    const C = pick([2, 3, 4, 5, 8, 10, 22, 47]), U = pick([5, 6, 9, 12, 24]);
+    return { title: 'Ladung auf dem Kondensator', text: `Ein Kondensator mit ${C} µF wird an ${U} V angeschlossen. Wie groß ist die Ladung?`, inputs: [{ label: 'Q', unit: 'µC', ans: C * U }], steps: [`Q = C·U = ${C} µF · ${U} V = <b>${C * U} µC</b>`] };
+  },
+  () => {
+    let a = pick([2, 3, 4, 5, 6, 8, 10, 12, 20]), b = pick([2, 3, 4, 5, 6, 8, 10, 12, 20]); if (a === b) b += 1;
+    const U = pick([6, 9, 12, 24]), Cg = a * b / (a + b), Q = Cg * U, U1 = Q / a;
+    return { title: 'Reihenschaltung', text: `Zwei Kondensatoren (${a} µF und ${b} µF) liegen in Reihe an ${U} V. Berechne C_ges und die Spannung am ${a}-µF-Kondensator.`, inputs: [{ label: 'C_ges', unit: 'µF', ans: Cg }, { label: 'U₁', unit: 'V', ans: U1 }], steps: [`1/C_ges = 1/${a} + 1/${b} = ${fmt(1 / a + 1 / b, 4)} 1/µF → C_ges = <b>${fmt(Cg, 4)} µF</b>`, `Q = C_ges·U = ${fmt(Q, 4)} µC (auf beiden gleich)`, `U₁ = Q/C₁ = ${fmt(Q, 4)} µC / ${a} µF = <b>${fmt(U1, 4)} V</b>`] };
+  },
+  () => {
+    let a = pick([2, 3, 4, 5, 6, 8, 10, 12, 20]), b = pick([2, 3, 4, 5, 6, 8, 10, 12, 20]);
+    const U = pick([6, 9, 12, 24]);
+    return { title: 'Parallelschaltung', text: `Zwei Kondensatoren (${a} µF und ${b} µF) liegen parallel an ${U} V. Berechne C_ges und die Gesamtladung.`, inputs: [{ label: 'C_ges', unit: 'µF', ans: a + b }, { label: 'Q_ges', unit: 'µC', ans: (a + b) * U }], steps: [`C_ges = ${a} µF + ${b} µF = <b>${a + b} µF</b>`, `Q_ges = C_ges·U = ${a + b} µF · ${U} V = <b>${(a + b) * U} µC</b>`] };
+  },
+  () => {
+    const R = pick([47, 100, 220, 330, 470, 1000]), C = pick([47, 100, 220, 470, 1000]);
+    const tau = R * C * 1e-6;
+    return { title: 'RC-Kreis', text: `Ein Kondensator mit ${C} µF wird über einen Widerstand von ${R} Ω entladen. Berechne τ und die Zeit, nach der er technisch entladen ist (5τ).`, inputs: [{ label: 'τ', unit: 'ms', ans: tau * 1e3 }, { label: '5τ', unit: 'ms', ans: 5 * tau * 1e3 }], steps: [`τ = R·C = ${R} Ω · ${C}·10⁻⁶ F = ${fmt(tau, 4)} s = <b>${fmt(tau * 1e3, 4)} ms</b>`, `5τ = <b>${fmt(5 * tau * 1e3, 4)} ms</b>`] };
+  },
+  () => {
+    const U0 = pick([4, 5, 6, 8, 9, 12]);
+    return { title: 'Spannung nach τ', text: `Ein Kondensator ist auf ${U0} V geladen und wird entladen. Wie groß ist die Spannung nach genau einer Zeitkonstante τ?`, inputs: [{ label: 'U_C(τ)', unit: 'V', ans: U0 * Math.exp(-1) }], steps: [`U_C(τ) = U₀·e⁻¹ = ${U0} V · 0,368 = <b>${fmt(U0 * Math.exp(-1), 3)} V</b>`] };
+  },
+  () => {
+    const U1 = pick([1000, 2000, 3000]), er = pick([1.25, 1.5, 2, 2.5, 4]);
+    return { title: 'Dielektrikum', text: `Ein abgeklemmter Plattenkondensator hat die Spannung ${U1} V. Nach dem Einschieben einer Platte misst man ${fmt(U1 / er)} V. Berechne εr.`, inputs: [{ label: 'εr', unit: '', ans: er }], steps: [`Q bleibt konstant → εr = U₁/U₂ = ${U1} V / ${fmt(U1 / er)} V = <b>${fmt(er)}</b>`] };
+  },
+  () => {
+    const q = pick([2, 4, 5, 10, 20]), U = pick([4, 5, 8, 10, 12]);
+    return { title: 'Arbeit im Feld', text: `Eine Ladung von ${q} µC durchläuft eine Spannung von ${U} V. Wie groß ist die Arbeit?`, inputs: [{ label: 'W', unit: 'µJ', ans: q * U }], steps: [`W = q·U = ${q} µC · ${U} V = <b>${q * U} µJ</b> (Fläche des Rechtecks im Arbeitsdiagramm)`] };
+  }
+];
+
+/* ---------- Aufgaben-Anzeige ---------- */
+function renderProblem(parent, p, onSolved) {
+  const d = document.createElement('div');
+  d.className = 'card prob';
+  d.innerHTML = `<b>${p.title}</b><p>${p.text}</p>` + p.inputs.map((x, i) => `<div class="inp"><label>${x.label}</label><input type="text" inputmode="decimal" data-i="${i}" placeholder="?" autocomplete="off"><span class="u">${x.unit}</span></div>`).join('') +
+    `<div class="row"><button class="btn primary" data-a="chk">Prüfen</button><button class="btn" data-a="sol">Lösung zeigen</button></div><div class="msg"></div><div class="sol" hidden></div>`;
+  let solved = false;
+  const msg = d.querySelector('.msg'), sol = d.querySelector('.sol');
+  const showSol = () => {
+    sol.hidden = false;
+    sol.innerHTML = '<b>Lösungsweg</b><ol>' + p.steps.map(s => `<li>${s}</li>`).join('') + '</ol>' + (p.note ? `<div class="tip warn">${p.note}</div>` : '');
+  };
+  d.querySelector('[data-a=sol]').addEventListener('click', showSol);
+  d.querySelector('[data-a=chk]').addEventListener('click', () => {
+    let ok = true, empty = false;
+    d.querySelectorAll('input').forEach((inp, i) => {
+      const v = num(inp.value), a = p.inputs[i].ans;
+      inp.classList.remove('ok', 'bad');
+      if (isNaN(v)) { empty = true; ok = false; return; }
+      const good = Math.abs(v - a) <= Math.max(Math.abs(a) * .02, 1e-9);
+      inp.classList.add(good ? 'ok' : 'bad'); if (!good) ok = false;
+    });
+    if (empty) { msg.innerHTML = 'Bitte alle Felder ausfüllen (Komma oder Punkt ist egal).'; return; }
+    if (ok) {
+      msg.innerHTML = '<b style="color:var(--ok)">✔ Richtig!</b>'; showSol();
+      if (!solved) { solved = true; store.set('solved', store.get('solved', 0) + 1); if (onSolved) onSolved(); }
+    } else msg.innerHTML = '<span style="color:var(--bad)">Noch nicht ganz.</span> Prüfe Einheiten und Zehnerpotenzen (µ = 10⁻⁶, p = 10⁻¹², k = 10³). Du darfst auf „Lösung zeigen“ tippen.';
+  });
+  parent.appendChild(d);
+}
+
+function modPractice(root) {
+  root.innerHTML = `
+  <p class="lead">Rechne selbst. Antworten werden mit 2 % Toleranz geprüft. Gelöst: <b id="cnt">0</b></p>
+  <div class="seg" id="tabs">
+    <button data-t="sheet" class="on">Dein Blatt</button>
+    <button data-t="rand">Zufall</button>
+    <button data-t="quiz">Quiz</button>
+  </div>
+  <div id="pane"></div>`;
+  const pane = $('#pane', root);
+  const cnt = () => { $('#cnt', root).textContent = store.get('solved', 0); };
+  function tab(t) {
+    pane.innerHTML = '';
+    if (t === 'sheet') {
+      pane.innerHTML = '<div class="tip">Elektrostatik, Blatt ES-2. Die Lösungswege zeigen auch, wo in deinen Notizen noch kleine Fehler stecken.</div>';
+      sheetProblems().forEach(p => renderProblem(pane, p, cnt));
+    } else if (t === 'rand') {
+      const wrap = document.createElement('div'); pane.appendChild(wrap);
+      const nw = () => { wrap.innerHTML = ''; renderProblem(wrap, pick(GEN)(), cnt); };
+      const b = document.createElement('button'); b.className = 'btn primary'; b.style.width = '100%'; b.textContent = '↻ Neue Aufgabe'; b.addEventListener('click', nw);
+      pane.appendChild(b); nw();
+    } else {
+      const all = shuffle(QUIZ);
+      const info = document.createElement('p'); info.className = 'lead';
+      const upd = () => { info.textContent = `Richtig beantwortet (insgesamt): ${Object.keys(store.get('quizok', {})).length} von ${QUIZ.length}`; };
+      pane.appendChild(info); upd();
+      quiz(pane, all, upd);
+    }
+  }
+  $('#tabs', root).addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    $('#tabs', root).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    tab(b.dataset.t);
+  });
+  cnt(); tab('sheet');
+  return { resize() { } };
+}
+
+</script>
+<script>
+'use strict';
+/* Modul 7: Formelsammlung mit Erklärungen und Suche */
+const FORMULAS = [
+  { k: 'feldstärke spannung abstand homogen', name: 'Feldstärke im homogenen Feld', f: 'E = ' + fr('U', 'd'), syms: [['E', 'Feldstärke', 'V/m'], ['U', 'Spannung', 'V'], ['d', 'Abstand der Platten', 'm']], expl: 'Wie stark das elektrische Feld ist: Spannung pro Meter. Je kleiner der Abstand bei gleicher Spannung, desto stärker das Feld.', ex: '2000 V / 0,003 m = 666 667 V/m' },
+  { k: 'kapazität ladung spannung', name: 'Kapazität und Ladung', f: 'Q = C · U &nbsp;bzw.&nbsp; C = ' + fr('Q', 'U'), syms: [['Q', 'Ladung', 'C'], ['C', 'Kapazität', 'F = C/V'], ['U', 'Spannung', 'V']], expl: 'Die Kapazität sagt, wie viel Ladung pro Volt gespeichert wird. Im Q-U-Diagramm ist C die Steigung.', ex: '4 µF · 12 V = 48 µC' },
+  { k: 'plattenkondensator fläche abstand dielektrikum permittivität', name: 'Kapazität des Plattenkondensators', f: 'C = ε<sub>0</sub> · ε<sub>r</sub> · ' + fr('A', 'd'), syms: [['ε<sub>0</sub>', 'Feldkonstante 8,854·10⁻¹²', 'F/m'], ['ε<sub>r</sub>', 'Material (Luft ≈ 1)', ''], ['A', 'Plattenfläche', 'm²'], ['d', 'Abstand', 'm']], expl: 'Große Fläche und kleiner Abstand machen eine große Kapazität. Ein Dielektrikum (z. B. Glas) vergrößert C um den Faktor εr.', tip: 'Proportionalitäten: C ~ A, C ~ 1/d, C ~ A/d.', ex: 'Ø 12 cm, d = 3 mm → 33,4 pF' },
+  { k: 'quelle angeschlossen abgeklemmt konstant', name: 'Angeschlossen oder abgeklemmt?', f: 'U = konst. &nbsp;|&nbsp; Q = konst.', expl: '<b>Angeschlossen</b>: Die Quelle hält U fest, Q ändert sich (Q ~ A, Q ~ 1/d). <b>Abgeklemmt</b>: Die Ladung kann nicht weg, Q bleibt; dann gilt U ~ d und E bleibt konstant. Mit Dielektrikum sinkt U auf U₁/εr.', tip: 'Immer zuerst fragen: Was bleibt konstant, U oder Q?' },
+  { k: 'dielektrikum glas relative permittivität abgeklemmt', name: 'εr aus der Spannungsänderung', f: 'ε<sub>r</sub> = ' + fr('U<sub>1</sub>', 'U<sub>2</sub>'), expl: 'Gilt für den abgeklemmten Kondensator (Q konstant): Das Material macht C größer, deshalb sinkt die Spannung.', ex: '2000 V / 1600 V = 1,25' },
+  { k: 'reihenschaltung kondensator gesamtkapazität', name: 'Reihenschaltung', f: fr('1', 'C<sub>ges</sub>') + ' = ' + fr('1', 'C₁') + ' + ' + fr('1', 'C₂'), expl: 'Gleiche Ladung auf allen, die Spannung teilt sich: U = U₁ + U₂. C_ges ist kleiner als der kleinste Einzelkondensator.', ex: '4 µF und 10 µF → 2,86 µF' },
+  { k: 'parallelschaltung kondensator gesamtkapazität', name: 'Parallelschaltung', f: 'C<sub>ges</sub> = C₁ + C₂', expl: 'Gleiche Spannung an allen, die Ladungen addieren sich.', ex: '4 µF + 10 µF = 14 µF' },
+  { k: 'arbeit energie ladung spannung', name: 'Arbeit im elektrischen Feld', f: 'W = q · U', syms: [['W', 'Arbeit/Energie', 'J'], ['q', 'Ladung', 'C'], ['U', 'Spannung', 'V']], expl: 'Im Arbeitsdiagramm (q über U) ist die Arbeit die Fläche unter dem Graphen.', ex: '5 µC · 8 V = 40 µJ' },
+  { k: 'steigung kapazität diagramm', name: 'Steigung im Q-U-Diagramm', f: fr('ΔQ', 'ΔU') + ' = tan(α) = C', expl: 'Die Steigung der Ursprungsgeraden ist die Kapazität.' },
+  { k: 'energie kondensator', name: 'Energie des Kondensators (Ergänzung)', f: 'W = ½ · C · U² = ½ · Q · U', expl: 'Dreiecksfläche unter der Q-U-Geraden.', ex: '½ · 4 µF · (12 V)² = 288 µJ' },
+  { k: 'zeitkonstante tau widerstand rc', name: 'Zeitkonstante', f: 'τ = R · C', syms: [['τ', 'Zeitkonstante', 's'], ['R', 'Widerstand', 'Ω'], ['C', 'Kapazität', 'F']], expl: 'Je größer R und C, desto langsamer wird geladen bzw. entladen.', ex: '100 Ω · 470 µF = 0,047 s' },
+  { k: 'entladen exponential rc spannung e-funktion', name: 'Entladen eines Kondensators', f: 'U<sub>C</sub>(t) = U<sub>0</sub> · e<sup>−t/τ</sup>', expl: 'Nach τ noch 36,8 %, nach 5τ noch 0,7 %.', ex: '8 V · e⁻¹ = 2,94 V' },
+  { k: 'laden exponential rc spannung e-funktion', name: 'Laden eines Kondensators', f: 'U<sub>C</sub>(t) = U<sub>0</sub> · (1 − e<sup>−t/τ</sup>)', expl: 'Nach τ sind 63,2 % erreicht, nach 5τ praktisch voll.' },
+  { k: 'millikan schweben ladung elementarladung', name: 'Millikan: Schwebebedingung', f: 'q · ' + fr('U', 'd') + ' = m · g &nbsp;⇒&nbsp; q = ' + fr('m · g · d', 'U'), expl: 'Elektrische Kraft und Gewichtskraft sind gleich groß, das Tröpfchen schwebt. Alle Ladungen sind ganzzahlige Vielfache der Elementarladung e = 1,602·10⁻¹⁹ C.' },
+  { k: 'feldlinien eigenschaften homogen äquipotential', name: 'Regeln für Feldlinien', f: 'E ⊥ Leiteroberfläche', expl: 'Feldlinien beginnen auf +, enden auf −, kreuzen sich nie, enden senkrecht auf Leitern, enger = stärker. Äquipotentialflächen stehen senkrecht zu den Feldlinien.' }
+];
+
+function modFormulas(root) {
+  root.innerHTML = `<p class="lead">Alle Formeln aus deinen Notizen, jeweils mit Erklärung der Größen. Tippe auf eine Karte zum Aufklappen.</p>
+    <input class="srch" id="s" placeholder="Suchen, z. B. Reihe, τ, Arbeit, Feldstärke" type="search"><div id="l"></div>`;
+  const list = $('#l', root);
+  const show = q => {
+    q = (q || '').toLowerCase().trim();
+    const r = FORMULAS.filter(f => !q || (f.name + ' ' + f.k + ' ' + plain(f.f)).toLowerCase().includes(q));
+    list.innerHTML = r.map(f => fcard(f)).join('') || '<p class="lead">Nichts gefunden.</p>';
+  };
+  $('#s', root).addEventListener('input', e => show(e.target.value));
+  show('');
+  return { resize() { } };
+}
+
+</script>
+<script>
+'use strict';
+const MODS = [
+  { id: 'field', ic: '🧲', title: 'Elektrisches Feld', sub: 'Feldlinien, Äquipotentiallinien, homogenes Feld', mount: modField },
+  { id: 'cap', ic: '🔋', title: 'Plattenkondensator', sub: 'C, Q, U, E und Dielektrikum', mount: modCap },
+  { id: 'circ', ic: '🔌', title: 'Reihe & Parallel', sub: 'Kondensatoren schalten', mount: modCirc },
+  { id: 'work', ic: '📈', title: 'Arbeitsdiagramm', sub: 'W = q·U, Steigung = C', mount: modWork },
+  { id: 'rc', ic: '⏱️', title: 'RC-Kreis', sub: 'Laden, Entladen, Zeitkonstante τ', mount: modRC },
+  { id: 'mill', ic: '🛢️', title: 'Millikan-Versuch', sub: 'Schwebendes Öltröpfchen, Elementarladung', mount: modMill },
+  { id: 'form', ic: '📘', title: 'Formelsammlung', sub: 'Alle Formeln erklärt, mit Suche', mount: modFormulas },
+  { id: 'prac', ic: '✏️', title: 'Aufgaben & Quiz', sub: 'Dein Blatt, Zufallsaufgaben, Quiz', mount: modPractice }
+];
+const app = $('#app'), title = $('#title'), back = $('#back');
+let active = null;
+
+function home() {
+  title.textContent = 'Physik Lernapp · Elektrostatik';
+  back.style.display = 'none';
+  const seen = store.get('seen', {});
+  const qz = Object.keys(store.get('quizok', {})).length;
+  app.innerHTML = `
+    <p class="lead">Interaktive Lernhilfe zu deinen Physik-Notizen: Elektrisches Feld, Kondensator, Schaltungen, Arbeitsdiagramm, RC-Kreis und Millikan. Wähle ein Thema.</p>
+    <div class="grid">${MODS.map(m => `<button class="mod" data-id="${m.id}"><span class="ic">${m.ic}</span><b>${m.title}</b><small>${m.sub}</small>${seen[m.id] ? '<span class="seen">✔ besucht</span>' : ''}</button>`).join('')}</div>
+    <div class="card"><b>Dein Fortschritt</b><div class="chips" style="margin-top:6px"><span class="chip">${Object.keys(seen).length} von ${MODS.length} Themen besucht</span><span class="chip">${store.get('solved', 0)} Aufgaben gelöst</span><span class="chip">${qz} von ${QUIZ.length} Quizfragen richtig</span></div></div>
+    <p class="lead" style="font-size:.85rem">Tipp: Beginne mit „Elektrisches Feld“ und gehe in der Reihenfolge weiter, so wie deine Notizen aufgebaut sind.</p>`;
+  app.querySelectorAll('.mod').forEach(b => b.addEventListener('click', () => { location.hash = b.dataset.id; }));
+}
+function route() {
+  if (active && active.stop) active.stop();
+  active = null;
+  const id = location.hash.slice(1);
+  const m = MODS.find(x => x.id === id);
+  window.scrollTo(0, 0);
+  if (!m) { home(); return; }
+  title.textContent = m.title;
+  back.style.display = 'block';
+  app.innerHTML = '';
+  const d = document.createElement('div');
+  app.appendChild(d);
+  active = m.mount(d);
+  const seen = store.get('seen', {}); seen[m.id] = 1; store.set('seen', seen);
+}
+back.addEventListener('click', () => { location.hash = ''; });
+window.addEventListener('hashchange', route);
+let rt = 0;
+window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (active && active.resize) active.resize(); }, 150); });
+route();
+
+</script>
+</body>
+</html>
